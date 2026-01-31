@@ -3,62 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tarih Dersi Ödev Portalı</title>
+    <title>Tarih Dersi Eğitim Portalı</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .container { background: white; max-width: 800px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        /* --- TEMEL STİLLER --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; user-select: none; /* Metin seçimi engeli */ }
+        .container { background: white; max-width: 900px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); position: relative; z-index: 10; }
         h1, h2, h3 { text-align: center; color: #2c3e50; }
         
-        /* Menü Grid */
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
-        .menu-btn { padding: 30px; font-size: 18px; cursor: pointer; border-radius: 10px; border: 2px solid #3498db; background: #fff; color: #3498db; transition: all 0.3s; font-weight: bold; }
-        .menu-btn:hover { background: #3498db; color: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3); }
+        /* --- GÜVENLİK FİLİGRANI (WATERMARK) --- */
+        #watermark {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 9999;
+            display: flex; flex-wrap: wrap; justify-content: space-around; align-content: space-around;
+            opacity: 0.04; overflow: hidden;
+        }
+        .watermark-text {
+            transform: rotate(-30deg); font-size: 24px; font-weight: bold; color: #000; margin: 50px;
+        }
+
+        /* --- GİRİŞ & MENÜ --- */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #34495e; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
+        textarea { height: 120px; resize: vertical; }
+        
+        .intro-box { background-color: #fff8e1; border-left: 5px solid #f1c40f; padding: 15px; margin-bottom: 25px; border-radius: 5px; font-size: 15px; line-height: 1.6; color: #555; }
+        
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .menu-btn { padding: 20px; font-size: 16px; cursor: pointer; border-radius: 8px; border: 2px solid #3498db; background: #fff; color: #3498db; transition: 0.3s; font-weight: bold; }
+        .menu-btn:hover { background: #3498db; color: white; transform: translateY(-3px); }
         .menu-btn.klasik { border-color: #e67e22; color: #e67e22; }
         .menu-btn.klasik:hover { background: #e67e22; color: white; }
 
-        /* Form & Input */
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; color: #34495e; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        textarea { height: 100px; resize: vertical; }
+        /* --- AKORDİYON (DERS MATERYALLERİ) --- */
+        .accordion-btn { background-color: #8e44ad; color: white; cursor: pointer; padding: 18px; width: 100%; border: none; text-align: left; outline: none; font-size: 16px; transition: 0.4s; border-radius: 8px; margin-top: 20px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .accordion-btn:after { content: '\002B'; font-weight: bold; font-size: 20px; } 
+        .accordion-btn.active:after { content: "\2212"; }
+        .accordion-btn:hover { background-color: #732d91; }
+        .panel { padding: 0 18px; background-color: white; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; border-left: 2px solid #8e44ad; margin-bottom: 10px; }
+        .file-link { display: block; padding: 10px; border-bottom: 1px solid #eee; text-decoration: none; color: #333; transition: 0.2s; }
+        .file-link:hover { background: #f9f9f9; color: #8e44ad; padding-left: 15px; }
+
+        /* --- SINAV EKRANI & NAVİGASYON --- */
+        .sticky-header { position: sticky; top: 0; background: white; padding: 10px 0; z-index: 100; border-bottom: 2px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .timer-box { font-size: 24px; font-weight: bold; color: #e74c3c; text-align: center; margin-bottom: 10px; }
         
-        /* Butonlar */
-        .action-btn { width: 100%; padding: 14px; background-color: #2980b9; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; margin-top: 15px; }
-        .action-btn:hover { background-color: #1a5276; }
-        .back-btn { background-color: #95a5a6; margin-top: 10px; }
-        .back-btn:hover { background-color: #7f8c8d; }
-
-        /* Gizleme */
-        .hidden { display: none !important; }
-
-        /* Soru Kartları */
-        .question-card { background: #fff; border: 1px solid #eee; padding: 20px; margin-bottom: 20px; border-radius: 8px; }
-        .question-text { font-size: 17px; font-weight: 600; margin-bottom: 15px; color: #2c3e50; }
-        .options label { display: block; padding: 10px; margin-bottom: 5px; cursor: pointer; border-radius: 4px; transition: background 0.2s; }
-        .options label:hover { background-color: #f9f9f9; }
+        .nav-map { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-bottom: 10px; }
+        .nav-dot { width: 30px; height: 30px; border-radius: 4px; background: #ecf0f1; border: 1px solid #bdc3c7; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; color: #7f8c8d; font-weight: bold; }
+        .nav-dot.answered { background: #3498db; color: white; border-color: #2980b9; }
+        .nav-dot.flagged { background: #f39c12; color: white; border-color: #d35400; }
+        
+        .question-card { background: #fff; border: 1px solid #eee; padding: 20px; margin-bottom: 20px; border-radius: 8px; position: relative; scroll-margin-top: 180px; /* Navigasyon için pay */ }
+        .question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .question-number { font-weight: bold; color: #2c3e50; font-size: 18px; }
+        .flag-btn { background: none; border: 1px solid #f39c12; color: #f39c12; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .flag-btn.active { background: #f39c12; color: white; }
+        
+        .options label { display: block; padding: 12px; margin-bottom: 8px; cursor: pointer; border-radius: 6px; border: 1px solid #eee; transition: background 0.2s; }
+        .options label:hover { background-color: #f0f8ff; border-color: #3498db; }
         .options input { width: auto; margin-right: 10px; }
 
-        /* Sonuç Alanı */
-        .score-circle { width: 120px; height: 120px; background: #27ae60; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin: 20px auto; }
-        .explanation-card { padding: 15px; margin-bottom: 10px; border-radius: 6px; border-left: 5px solid #bdc3c7; background: #f9f9f9; }
+        /* --- BUTONLAR & FOOTER --- */
+        .action-btn { width: 100%; padding: 14px; background-color: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; margin-top: 15px; font-weight: bold; }
+        .action-btn:hover { background-color: #219150; }
+        .back-btn { background-color: #95a5a6; }
+        .back-btn:hover { background-color: #7f8c8d; }
+        
+        .footer { margin-top: 40px; text-align: center; font-size: 13px; color: #95a5a6; border-top: 1px solid #eee; padding-top: 20px; }
+        
+        .hidden { display: none !important; }
+        
+        /* Sonuç Raporu */
+        .explanation-card { padding: 15px; margin-bottom: 10px; border-radius: 6px; border-left: 5px solid #ccc; background: #fafafa; }
         .explanation-card.correct { border-left-color: #27ae60; background-color: #eafaf1; }
         .explanation-card.wrong { border-left-color: #e74c3c; background-color: #fdedec; }
+
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;"> <div id="watermark"></div>
 
 <div class="container">
     
     <div id="girisEkrani">
-        <h1>Tarih Ödev Portalı</h1>
-        <p style="text-align: center; color: #7f8c8d;">Lütfen önce kimlik bilgilerinizi giriniz.</p>
+        <h1>Tarih Dersi Öğrenci Girişi</h1>
+        <p style="text-align: center; color: #7f8c8d;">Sınava başlamak için bilgilerinizi giriniz.</p>
         
         <div class="form-group">
-            <label>Ad Soyad:</label>
+            <label>Adınız Soyadınız:</label>
             <input type="text" id="adSoyad" placeholder="Örn: Ali Veli">
         </div>
         <div class="form-group">
-            <label>Sınıf:</label>
+            <label>Sınıfınız:</label>
             <select id="sinif">
                 <option value="">Seçiniz</option>
                 <option value="9-A">9-A</option>
@@ -66,237 +101,486 @@
                 <option value="9-C">9-C</option>
                 <option value="9-D">9-D</option>
                 <option value="9-E">9-E</option>
+                <option value="10-A">10-A</option>
+                <option value="10-B">10-B</option>
             </select>
         </div>
         <div class="form-group">
-            <label>Okul Numarası:</label>
-            <input type="number" id="numara" placeholder="Örn: 101">
+            <label>Okul Numaranız:</label>
+            <input type="number" id="numara" placeholder="Örn: 1045">
         </div>
         <div class="form-group">
             <label>Sınav Şifresi:</label>
-            <input type="password" id="sifre" placeholder="Öğretmeninizden aldığınız şifre">
+            <input type="password" id="sifre" placeholder="Öğretmeninizden aldığınız şifre" onkeypress="if(event.key==='Enter') girisYap()">
         </div>
-        <button class="action-btn" onclick="girisYap()">Giriş Yap</button>
+        <button class="action-btn" onclick="girisYap()" style="background-color: #2980b9;">Giriş Yap</button>
     </div>
 
     <div id="menuEkrani" class="hidden">
-        <h2>Hoşgeldin <span id="kullaniciAdiSpan"></span></h2>
-        <p style="text-align: center;">Lütfen çözmek istediğin ödevi seç:</p>
-        <div class="menu-grid">
-            <button class="menu-btn" onclick="testSec('test1')">1. Ünite Testi (30 Soru)</button>
-            <button class="menu-btn" onclick="testSec('test2')">2. Ünite Testi (30 Soru)</button>
-            <button class="menu-btn" onclick="testSec('test3')">3. Ünite Testi (30 Soru)</button>
-            <button class="menu-btn klasik" onclick="testSec('klasik')">Klasik Sınav (Açık Uçlu)</button>
+        <h2>Hoşgeldin, <span id="kullaniciAdiSpan"></span></h2>
+        
+        <div class="intro-box">
+            Sevgili öğrenciler; sizin için hazırladığım bu testler ve ders notları derslerde işlediğimiz konularımızı anlamlı öğrenmeye dönüştürmek için hazırlanmıştır. Çoktan seçmeli testleriniz "Basit, Orta, Zor" şeklinde sizlere sunulmuş olup derslerdeki dikkat seviyenizi ve not alma alışkanlığınızı ölçerken "Açık Uçlu (Klasik)" sınavınız ise MEB Maarif Modelinin sizlerden istediği <strong>"YORUMLAMA ve ANALİZ BECERİSİ"</strong>ni ölçmek üzere hazırlanmıştır. Bu sınavları sizlere derslerde verdiğim direktifler doğrultusunda çözmeniz sadece Tarih dersinize değil bütün derslerinize olumlu katkı yapacaktır.
         </div>
+
+        <p style="text-align: center; font-weight: bold;">Lütfen bir işlem seçiniz:</p>
+        
+        <div class="menu-grid">
+            <button class="menu-btn" onclick="testSec('test1')">📝 1. Ünite Testi<br><small>(30 Soru - 30 Dk)</small></button>
+            <button class="menu-btn" onclick="testSec('test2')">📝 2. Ünite Testi<br><small>(30 Soru - 30 Dk)</small></button>
+            <button class="menu-btn" onclick="testSec('test3')">📝 3. Ünite Testi<br><small>(30 Soru - 30 Dk)</small></button>
+            <button class="menu-btn klasik" onclick="testSec('klasik')">✍️ Klasik Sınav<br><small>(Açık Uçlu - 40 Dk)</small></button>
+        </div>
+
+        <button class="accordion-btn">📚 Ders Materyalleri ve İndirmeler</button>
+        <div class="panel" id="materyalPaneli">
+            </div>
+
+        <div class="footer">Hazırlayan: Murat Mutlu, Tarih Öğretmeni</div>
     </div>
 
     <div id="testEkrani" class="hidden">
-        <h2 id="testBaslik">Sınav</h2>
-        <div id="sorularAlani"></div>
-        <button class="action-btn" onclick="testiBitir()">Sınavı Bitir ve Gönder</button>
-        <button class="action-btn back-btn" onclick="menuyeDon()">Menüye Dön</button>
-    </div>
+        
+        <div class="sticky-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 10px;">
+                <h3 id="testBaslik" style="margin:0;">Sınav</h3>
+                <div class="timer-box" id="sayac">00:00</div>
+            </div>
+            <div class="nav-map" id="navMap"></div>
+        </div>
 
-    <div id="klasikEkrani" class="hidden">
-        <h2>Klasik Sınav</h2>
-        <p style="text-align: center; color: #e67e22;">Cevaplarınızı kutucuklara yazınız. Puanlama öğretmen tarafından yapılacaktır.</p>
-        <div id="klasikSorularAlani"></div>
-        <button class="action-btn" onclick="klasikBitir()">Cevapları Gönder</button>
-        <button class="action-btn back-btn" onclick="menuyeDon()">Menüye Dön</button>
+        <div id="sorularAlani" style="margin-top: 20px;"></div>
+
+        <button class="action-btn" onclick="testiBitir()">Sınavı Bitir ve Gönder</button>
     </div>
 
     <div id="sonucEkrani" class="hidden">
-        <h2>Tebrikler!</h2>
-        <div id="puanKutusu" class="hidden">
-            <div class="score-circle" id="puanGostergesi">0</div>
-            <p style="text-align: center;">Puanın Sisteme Kaydedildi.</p>
+        <h2>Sınav Tamamlandı!</h2>
+        <div id="puanKutusu" style="text-align: center; display: none;">
+            <div style="font-size: 50px; color: #27ae60; font-weight: bold;" id="puanGostergesi"></div>
+            <p>Puanınız sisteme kaydedildi.</p>
         </div>
-        <div id="klasikMesaj" class="hidden">
-            <p style="text-align: center; font-size: 18px; color: #27ae60; font-weight: bold;">Cevaplarınız başarıyla öğretmene iletildi.<br>Öğretmeniniz değerlendirdikten sonra notunuzu açıklayacaktır.</p>
+        <div id="klasikMesaj" style="text-align: center; display: none;">
+            <h3 style="color: #27ae60;">Cevaplarınız Kaydedildi.</h3>
+            <p>Öğretmeniniz değerlendirdikten sonra notunuzu açıklayacaktır.</p>
+        </div>
+        
+        <div style="background: #f1f1f1; padding: 10px; margin: 20px 0; border-radius: 5px; text-align: center;">
+            Tamamlama Süresi: <span id="bitirmeSuresi" style="font-weight: bold;"></span>
         </div>
 
-        <div id="detayliCozumler" style="margin-top: 30px;"></div>
+        <div id="detayliCozumler"></div>
         <button class="action-btn back-btn" onclick="location.reload()">Çıkış Yap</button>
     </div>
 
 </div>
 
 <script>
-    // --- AYARLAR ---
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDZ3mW8pTOoDlv5ZoEbY1wrilIj9ojvnZT8Ofc_QZWp3PHKBCuNiRSsg9pnO-Jezoz6A/exec"; // Google Script URL'si
+    // --- 1. AYARLAR ---
+    const SCRIPT_URL = "BURAYA_URL_YAPISTIR"; // <-- BURAYA GOOGLE SCRIPT URL'Nİ YAPIŞTIR
     const DOGRU_SIFRE = "1234"; 
 
-    // --- KLASİK SINAV SORULARI ---
-    // Buraya kendi klasik sorularını ekleyebilirsin.
-    const klasikSorular = [
-        "1. Tarih biliminin tanımını yaparak, tarih biliminin konusunu kısaca açıklayınız.",
-        "2. 'Tarih tekerrürden ibarettir' sözünü tarih metodolojisi açısından yorumlayınız.",
-        "3. Birinci elden kaynak ve ikinci elden kaynak arasındaki fark nedir? Örnek veriniz."
+    // --- 2. DERS MATERYALLERİ LİSTESİ ---
+    // Buradaki dosya isimlerini GitHub'daki gerçek isimlerle değiştir.
+    const dersMateryalleri = [
+        {baslik: "📂 1. Ünite Ders Notları (PDF)", link: "materyaller/notlar/1_unite_notlari.pdf"},
+        {baslik: "📂 2. Ünite Ders Notları (PDF)", link: "materyaller/notlar/2_unite_notlari.pdf"},
+        {baslik: "🗺️ İlk Çağ Uygarlıkları Haritası", link: "materyaller/haritalar/ilk_cag_haritasi.jpg"},
+        {baslik: "🧠 Tarih Bilimi Kavram Haritası", link: "materyaller/kavram_haritalari/tarih_kavram_haritasi.pdf"}
     ];
 
-    // --- VERİTABANI ---
-    // Test verileri (Parsing işleminden gelen veriler)
+    // --- 3. TEST VERİLERİ (HEPSİ DAHİL) ---
+    // Test 1 (Önceki veriden), Test 2 ve 3 (Yeni parsed veriden)
     const allTests = {
         test1: [
-            {soru: "1. Aşağıdakilerden hangisi 'birinci elden kaynak' (ana kaynak) tanımına en uygundur?", secenekler: ["A) Ders kitabı", "B) Tarihi bir roman", "C) Fatih Sultan Mehmet'in yazdığı ferman", "D) Ansiklopedi", "E) Tarih öğretmeninin notları"], cevap: "C) Fatih Sultan Mehmet'in yazdığı ferman", aciklama: "Birinci elden kaynaklar, olayın geçtiği döneme ait olan ve olaya tanıklık eden kaynaklardır."},
-            {soru: "2. Tarih bilimi olayları incelerken aşağıdakilerden hangisine BAŞVURMAZ?", secenekler: ["A) Belgelere", "B) Deney ve Gözleme", "C) Arkeolojik bulgulara", "D) Kronolojiye", "E) Coğrafi konuma"], cevap: "B) Deney ve Gözleme", aciklama: "Tarihi olaylar tekrarlanamadığı için deney yapılamaz."},
-            {soru: "3. Tarih araştırmalarında kaynakların sınıflandırılmasına ne ad verilir?", secenekler: ["A) Tarama", "B) Tasnif", "C) Tahlil", "D) Tenkit", "E) Terkip"], cevap: "B) Tasnif", aciklama: "Tasnif sınıflandırma aşamasıdır."},
-            {soru: "4. Aşağıdakilerden hangisi tarih öğrenmenin bireye sağladığı faydalardan biri DEĞİLDİR?", secenekler: ["A) Eleştirel düşünme", "B) Milli kimlik bilinci", "C) Geleceği kesin tahmin etme", "D) Empati", "E) Çok yönlü düşünme"], cevap: "C) Geleceği kesin tahmin etme", aciklama: "Tarih geleceği kesin olarak bildiremez."},
-            {soru: "5. Kaynak Arama aşamasına verilen isim hangisidir?", secenekler: ["A) Terkip", "B) Tenkit", "C) Tahlil", "D) Tarama", "E) Tasnif"], cevap: "D) Tarama", aciklama: "İlk aşama kaynak taramasıdır."},
-            // ... (Test 1'in devamı sistemde yüklü olacak, yer kaplamasın diye kısalttım ama senin önceki 30 sorunu buraya tam koydum varsay) ...
+            {soru: "Aşağıdakilerden hangisi 'birinci elden kaynak' (ana kaynak) tanımına en uygundur?", secenekler: ["A) Ders kitabı", "B) Tarihi bir roman", "C) Fatih Sultan Mehmet'in yazdığı ferman", "D) Ansiklopedi", "E) Tarih öğretmeninin notları"], cevap: "C) Fatih Sultan Mehmet'in yazdığı ferman", aciklama: "Birinci elden kaynaklar, olayın geçtiği döneme ait olan ve olaya tanıklık eden kaynaklardır."},
+            {soru: "Tarih bilimi olayları incelerken aşağıdakilerden hangisine BAŞVURMAZ?", secenekler: ["A) Belgelere", "B) Deney ve Gözleme", "C) Arkeolojik bulgulara", "D) Kronolojiye", "E) Coğrafi konuma"], cevap: "B) Deney ve Gözleme", aciklama: "Tarihi olaylar tekrarlanamadığı için deney yapılamaz."},
+            {soru: "Tarih araştırmalarında kaynakların sınıflandırılmasına (zamana, mekana veya konuya göre ayırma) ne ad verilir?", secenekler: ["A) Tarama", "B) Tasnif", "C) Tahlil", "D) Tenkit", "E) Terkip"], cevap: "B) Tasnif", aciklama: "Tasnif sınıflandırma aşamasıdır."},
+            {soru: "Aşağıdakilerden hangisi tarih öğrenmenin bireye sağladığı faydalardan biri DEĞİLDİR?", secenekler: ["A) Eleştirel düşünme becerisi kazandırır.", "B) Milli kimlik bilincini geliştirir.", "C) Geleceği kesin olarak tahmin etmeyi sağlar.", "D) Empati yeteneğini güçlendirir.", "E) Çok yönlü düşünmeyi sağlar."], cevap: "C) Geleceği kesin olarak tahmin etmeyi sağlar.", aciklama: "Tarih falcılık değildir, geleceği kesin bilemeyiz."},
+            {soru: "Tarihsel bilginin üretim sürecinde 'Kaynak Arama' aşamasına verilen isim hangisidir?", secenekler: ["A) Terkip", "B) Tenkit", "C) Tahlil", "D) Tarama", "E) Tasnif"], cevap: "D) Tarama", aciklama: "İlk aşama kaynak taramasıdır."},
+            {soru: "Aşağıdakilerden hangisi 'Sözlü Kaynaklar' grubuna girer?", secenekler: ["A) Kitabeler", "B) Destanlar", "C) Paralar", "D) Heykeller", "E) Fermanlar"], cevap: "B) Destanlar", aciklama: "Destanlar dilden dile aktarılan sözlü kaynaklardır."},
+            {soru: "Dijitalleşmenin tarih araştırmalarına sağladığı en belirgin kolaylık aşağıdakilerden hangisidir?", secenekler: ["A) Bilgiye erişim hızını artırması", "B) Kaynakları tamamen yok etmesi", "C) Tarihçilere olan ihtiyacı bitirmesi", "D) Sadece yazılı kaynakları içermesi", "E) Tarihi olayları değiştirmesi"], cevap: "A) Bilgiye erişim hızını artırması", aciklama: "Dijital kütüphaneler sayesinde erişim hızı artmıştır."},
+            {soru: "Tarihi bilgilerin değişebilir özellikte olması ne anlama gelir?", secenekler: ["A) Tarihin bir bilim dalı olmadığına", "B) Geçmişteki olayların sürekli değiştiğine", "C) Yeni belgeler bulundukça mevcut bilgilerin güncellenebileceğine", "D) Tarihçilerin keyfi yorum yaptığına", "E) Tarihi olayların tekrarlanabileceğine"], cevap: "C) Yeni belgeler bulundukça mevcut bilgilerin güncellenebileceğine", aciklama: "Tarihte mutlak değişmez bilgi yoktur, yeni belge bilgiyi değiştirebilir."},
+            {soru: "Aşağıdakilerden hangisi tarih araştırmalarında kullanılan 'Yazılı Kaynaklar'dan biri değildir?", secenekler: ["A) Tabletler", "B) Beratlar", "C) Gazeteler", "D) Mağara duvar resimleri", "E) Yıllıklar"], cevap: "D) Mağara duvar resimleri", aciklama: "Mağara resimleri görsel/kalıntı kaynaktır (alfabe yoksa)."},
+            {soru: "Bir tarihçinin araştırmasında kullandığı kaynağın güvenilir olup olmadığını incelediği aşama hangisidir?", secenekler: ["A) Tarama", "B) Tasnif", "C) Tenkit (Eleştiri)", "D) Terkip", "E) Tahlil"], cevap: "C) Tenkit (Eleştiri)", aciklama: "Güvenilirlik ve doğruluk Tenkit aşamasında sorgulanır."},
+            {soru: "Halil İnalcık'ın 'Osmanlı İmparatorluğu Klasik Çağ' kitabı tarih metodolojisine göre nasıl sınıflandırılır?", secenekler: ["A) Birinci elden, sözlü kaynak", "B) İkinci elden, yazılı kaynak", "C) Birinci elden, yazılı kaynak", "D) İkinci elden, görsel kaynak", "E) Birinci elden, görsel kaynak"], cevap: "B) İkinci elden, yazılı kaynak", aciklama: "Olaydan sonra belgelerle yazıldığı için ikinci el kaynaktır."},
+            {soru: "Tarihsel bilginin üretim sürecinde 'Terkip' (Sentez) aşaması neden en son sırada yer alır?", secenekler: ["A) Kaynak bulmak çok zor olduğu için", "B) Elde edilen bilgilerin sınıflandırılması gerektiği için", "C) Doğruluğu kanıtlanmış bilgilerin birleştirilerek eserin yazıldığı aşama olduğu için", "D) Eleştiri yapmadan eser yazılamayacağı için", "E) Sadece sözlü kaynakların kullanıldığı aşama olduğu için"], cevap: "C) Doğruluğu kanıtlanmış bilgilerin birleştirilerek eserin yazıldığı aşama olduğu için", aciklama: "Terkip, tüm araştırmanın birleştirilip eserin yazıldığı son aşamadır."},
+            {soru: "Büyük Veri (Big Data) kullanımının tarihçilere sunduğu avantaj nedir?", secenekler: ["A) Belgelerin orijinalliğinin bozulması", "B) Milyonlarca veriyi analiz ederek daha önce fark edilmeyen örüntüleri keşfetme imkanı", "C) Sadece son 10 yılın tarihinin araştırılabilmesi", "D) Kütüphanelere gitme zorunluluğunun tamamen kalkması", "E) Yabancı dil bilme gerekliliğinin ortadan kalkması"], cevap: "B) Milyonlarca veriyi analiz ederek daha önce fark edilmeyen örüntüleri keşfetme imkanı", aciklama: "Büyük veri analizi insan gözüyle görülemeyen ilişkileri ortaya çıkarır."},
+            {soru: "Bir araştırmacının hem Türk hem İngiliz raporlarını okuması tarih biliminin hangi ilkesiyle ilgilidir?", secenekler: ["A) Yer ve zaman belirtme", "B) Objektiflik (Nesnellik)", "C) Deney yapma", "D) Tasnif etme", "E) Sentez yapma"], cevap: "B) Objektiflik (Nesnellik)", aciklama: "Çapraz okuma yapmak tarafsızlığı (objektifliği) sağlar."},
+            {soru: "Aşağıdaki eşleştirmelerden hangisi YANLIŞTIR?", secenekler: ["A) Ferman - Yazılı Kaynak", "B) Menkıbe - Sözlü Kaynak", "C) Arkeolojik Çömlek - Kalıntı/Nesne", "D) İstiklal Madalyası - Yazılı Kaynak", "E) Minyatür - Görsel Kaynak"], cevap: "D) İstiklal Madalyası - Yazılı Kaynak", aciklama: "Madalya bir nesnedir, yazılı kaynak sayılmaz."},
+            {soru: "'Tarih, milletlerin hafızasıdır.' sözü hangisine vurgu yapmaktadır?", secenekler: ["A) Ekonomik kalkınmaya", "B) Teknolojik gelişime", "C) Milli kültürün ve kimliğin nesilden nesile aktarılmasına", "D) Askeri gücün artırılmasına", "E) Coğrafi sınırların genişlemesine"], cevap: "C) Milli kültürün ve kimliğin nesilden nesile aktarılmasına", aciklama: "Tarih toplumsal hafızayı ve kimliği korur."},
+            {soru: "Tahlil aşamasında veriler yetersiz bulunursa ne yapılmalıdır?", secenekler: ["A) Araştırmayı sonlandırmalıdır.", "B) 'Tarama' aşamasına geri dönerek yeni kaynaklar aramalıdır.", "C) Kendi yorumlarıyla boşlukları doldurmalıdır.", "D) Eseri hemen kaleme almalıdır.", "E) Kaynakları imha etmelidir."], cevap: "B) 'Tarama' aşamasına geri dönerek yeni kaynaklar aramalıdır.", aciklama: "Bilgi eksikse sentez yapılamaz, başa dönüp kaynak aranır."},
+            {soru: "Dijital arşivlerdeki 'Bilgi Kirliliği'ne karşı tarihçi ne yapmalıdır?", secenekler: ["A) Sadece basılı kaynak kullanmalıdır.", "B) İnternette bulduğu ilk bilgiye güvenmelidir.", "C) Dijital veriyi, Tenkit (Eleştiri) süzgecinden geçirip doğrulamalıdır.", "D) Dijitalleşmeyi reddetmelidir.", "E) Wikipedia'yı tek kaynak olarak almalıdır."], cevap: "C) Dijital veriyi, Tenkit (Eleştiri) süzgecinden geçirip doğrulamalıdır.", aciklama: "Her bilgi doğru değildir, teyit edilmelidir."},
+            {soru: "Bir tarihçinin sadece raporları değil, şiirleri ve fotoğrafları da incelemesi neyi amaçladığını gösterir?", secenekler: ["A) Olayı sadece edebi açıdan incelemeyi", "B) Tarihi olayı çok yönlü ve bütüncül kavramayı", "C) Askeri belgelerin yanlış olduğunu kanıtlamayı", "D) Araştırmayı kısa sürede bitirmeyi", "E) Sadece görsel öğeler kullanmayı"], cevap: "B) Tarihi olayı çok yönlü ve bütüncül kavramayı", aciklama: "Farklı kaynak türleri olaya bütüncül bakmayı sağlar."},
+            {soru: "Eski paraları inceleyen bilim dalı hangisidir?", secenekler: ["A) Paleografya", "B) Nümizmatik", "C) Epigrafya", "D) Antropoloji", "E) Filoloji"], cevap: "B) Nümizmatik", aciklama: "Nümizmatik (Meskukat) para bilimidir."},
+            {soru: "İnsanların kendi aile tarihlerini dijital platformlara yüklemesinin tarih bilimine katkısı nedir?", secenekler: ["A) Resmi tarihin tek kaynak olmasını sağlar.", "B) Yerel ve sözlü tarih unsurlarının kaybolmasını engeller.", "C) Tarihçilerin işsiz kalmasına neden olur.", "D) Tarihi olayların önemini azaltır.", "E) Sadece devletlerin tarihinin yazılmasını sağlar."], cevap: "B) Yerel ve sözlü tarih unsurlarının kaybolmasını engeller.", aciklama: "Halkın tarihi (sosyal tarih) bu sayede kaybolmaz."},
+            {soru: "Aşağıdaki ifadelerden hangisi tarihsel empati kurmaya bir örnektir?", secenekler: ["A) 'İstanbul'un fethinde neden uçak kullanılmadı?' demek.", "B) 'O dönemin şartlarında Fatih gemileri karadan yürütmek zorundaydı.' diyebilmek.", "C) 'Eski insanlar teknolojiden anlamıyordu.' demek.", "D) Geçmişi bugünün ahlak kurallarıyla yargılamak.", "E) Tarihi olayları tamamen yok saymak."], cevap: "B) 'O dönemin şartlarında Fatih gemileri karadan yürütmek zorundaydı.' diyebilmek.", aciklama: "Empati, olayı o günün şartlarına göre değerlendirmektir."},
+            {soru: "'Bu belgenin kağıt ve mürekkep yapısı o döneme ait mi?' sorusu hangi tenkit türüne girer?", secenekler: ["A) İç Tenkit", "B) Dış Tenkit", "C) Sözlü Tenkit", "D) Tahlil", "E) Terkip"], cevap: "B) Dış Tenkit", aciklama: "Fiziksel özellikler Dış Tenkit konusudur."},
+            {soru: "Dijital oyunlar ve dizilerin yanlış bilgi içermesi eğitimde nasıl bir sonuç doğurur?", secenekler: ["A) Tarih dersine gerek kalmaz.", "B) Öğrencilerde 'gerçeklik' ile 'kurgu' ayrımını yapma becerisi zorunluluğu doğar.", "C) Tarihi kaynakların hepsi yakılmalıdır.", "D) Sadece dizilerden tarih öğrenilmelidir.", "E) Dijital oyunlar yasaklanmalıdır."], cevap: "B) Öğrencilerde 'gerçeklik' ile 'kurgu' ayrımını yapma becerisi zorunluluğu doğar.", aciklama: "Medya okuryazarlığı ile kurgu ve gerçek ayırt edilmelidir."},
+            {soru: "Bir döneme ait yazılı belge bulunamazsa tarihçi ne yapmalıdır?", secenekler: ["A) Araştırmayı iptal etmelidir.", "B) Olayları hayal gücüyle yazmalıdır.", "C) Yabancı devlet kaynaklarına ve arkeolojiye yönelmelidir.", "D) Sadece sözlü efsaneleri doğru kabul etmelidir.", "E) Dönemi kitaplardan çıkarmalıdır."], cevap: "C) Yabancı devlet kaynaklarına ve arkeolojiye yönelmelidir.", aciklama: "Çapraz okuma ve arkeoloji ile eksikler tamamlanır."},
+            {soru: "Bir yazarın eserinde sürekli kendi milletini yüceltmesi iç tenkitte hangi sorunun cevabıdır?", secenekler: ["A) Belgenin fiziksel durumu nasıldır?", "B) Belge hangi tarihte basılmıştır?", "C) Yazar olaylara objektif yaklaşmış mıdır?", "D) Belgedeki terimler günümüze uygun mudur?", "E) Belge nerede saklanmaktadır?"], cevap: "C) Yazar olaylara objektif yaklaşmış mıdır?", aciklama: "Yazarın taraflılığı iç tenkit konusudur."},
+            {soru: "'Born-digital' (Doğuştan dijital) kaynak kavramına en doğru örnek hangisidir?", secenekler: ["A) Fatih Fermanı'nın taranması", "B) Lozan Antlaşması'nın fotoğrafı", "C) Bir devlet başkanının sosyal medya hesabından yaptığı resmi açıklama", "D) Eski bir gazetenin taranması", "E) Bir heykelin 3D modellemesi"], cevap: "C) Bir devlet başkanının sosyal medya hesabından yaptığı resmi açıklama", aciklama: "Doğuştan dijitallerin kağıt aslı yoktur (Tweet, E-posta vb)."},
+            {soru: "'Tarih, geçmişin kendisi değil, tarihçi tarafından yeniden inşasıdır' sözü neyi vurgular?", secenekler: ["A) Tarihin tamamen uydurma olduğunu", "B) Geçmişin olduğu gibi aktarılmasının imkansız olduğunu, tarihçinin bakış açısının etkili olduğunu", "C) Tarihçilerin geçmişi değiştirebileceğini", "D) Tarihte kesin kanunların olduğunu", "E) Herkesin tarihçi olabileceğini"], cevap: "B) Geçmişin olduğu gibi aktarılmasının imkansız olduğunu, tarihçinin bakış açısının etkili olduğunu", aciklama: "Tarih, tarihçinin seçtiği ve yorumladığı bir kurgudur."},
+            {soru: "Aşağıdaki senaryoların hangisinde anakronizm (tarih yanılgısı) yapılmıştır?", secenekler: ["A) Sümerlerin yazıyı kullanması", "B) Mısırlıların piramit yapması", "C) Mete Han'ın ordusunu düzenlemesi", "D) Malazgirt Savaşı'nda 'milliyetçilik' akımından etkilenilmesi", "E) Osmanlıların İstanbul'u kuşatması"], cevap: "D) Malazgirt Savaşı'nda 'milliyetçilik' akımından etkilenilmesi", aciklama: "Milliyetçilik 1789'da çıkmıştır, 1071'de olamaz."},
+            {soru: "Dijitalleşme ile tarih yazımında 'Demokratikleşme' neyi ifade eder?", secenekler: ["A) Sadece demokratik ülkelerin tarihini", "B) Tarihsel bilginin akademisyenlerin tekelinden çıkıp halka açılmasını", "C) Seçim sonuçlarının saklanmasını", "D) Tarihçilerin oylama ile seçilmesini", "E) Herkesin tarihi değiştirebilmesini"], cevap: "B) Tarihsel bilginin akademisyenlerin tekelinden çıkıp halka açılmasını", aciklama: "Bilgiye erişim herkes için mümkün hale gelmiştir."}
         ],
-        test2: [{"soru": "İnsan topluluklarının geçmişteki yaşayışlarını, kültürlerini, birbirleriyle olan ilişkilerini yer ve zaman göstererek, neden-sonuç ilişkisi içinde inceleyen bilim dalı aşağıdakilerden hangisidir?", "secenekler": ["A) Sosyoloji", "B) Tarih", "C) Arkeoloji", "D) Coğrafya", "E) Felsefe"], "cevap": "B) Tarih", "aciklama": "Verilen tanım, tarih biliminin en temel ve kapsamlı tanımıdır. Diğer şıklar tarihe yardımcı bilim dalları veya farklı disiplinlerdir."}, {"soru": "Tarih öncesi dönemlerin (yazının icadından önceki devirler) aydınlatılmasında tarih bilimine en çok yardımcı olan bilim dalı hangisidir?", "secenekler": ["A) Diplomasi", "B) Nümizmatik", "C) Paleografya", "D) Arkeoloji", "E) Epigrafya"], "cevap": "D) Arkeoloji", "aciklama": "Yazının olmadığı dönemlerde belge okunamaz. Bu yüzden toprağın altındaki kalıntıları inceleyen Arkeoloji (Kazı Bilimi) en önemli kaynaktır. Diğer şıkların hepsi yazıyla ilgilidir."}, {"soru": "Türklerin tarih boyunca kullandığı takvimlerden hangisi 'Ay Yılı' esaslıdır?", "secenekler": ["A) 12 Hayvanlı Türk Takvimi", "B) Celali Takvim", "C) Hicri Takvim", "D) Rumi Takvim", "E) Miladi Takvim"], "cevap": "C) Hicri Takvim", "aciklama": "Türklerin kullandığı takvimler içinde sadece Hicri Takvim Ay yılına göre düzenlenmiştir. Diğerlerinin tamamı Güneş yılı esaslıdır."}, {"soru": "Tarihi olayların zamanının belirlenmesinde ve sıralanmasında tarihe yardımcı olan 'Zaman Bilimi' aşağıdakilerden hangisidir? ", "secenekler": ["A) Kronoloji", "B) Coğrafya", "C) Etnografya", "D) Heraldik", "E) Kimya"], "cevap": "A) Kronoloji", "aciklama": "Kronoloji, olayların oluş sırasını belirleyen zaman bilimidir. 'Takvim bilgisi' olarak da adlandırılabilir."}, {"soru": "Tarih biliminin konusu aşağıdakilerden hangisini kapsamaz? ", "secenekler": ["A) Savaşlar ve barışlar", "B) Depremlerin oluşum mekanizması", "C) Göçler", "D) İbadet şekilleri", "E) Devlet yönetimleri"], "cevap": "B) Depremlerin oluşum mekanizması", "aciklama": "Tarihin konusu 'insan' faaliyetleridir. Depremin nasıl olduğu (jeolojik süreç) Fen/Coğrafya konusudur; ancak depremin insan üzerindeki etkisi tarihin konusu olabilir."}, {"soru": "Aşağıdakilerden hangisi tarih araştırmalarında kullanılan 'Görsel Kaynaklar' grubunda yer alır? ", "secenekler": ["A) Tabletler", "B) Fotoğraflar", "C) Efsaneler", "D) Şecereler", "E) Halılar"], "cevap": "B) Fotoğraflar", "aciklama": "Fotoğraflar, filmler, resimler ve haritalar görsel kaynaklardır. Efsane sözlü, tablet yazılı, halı ise nesne/kalıntıdır."}, {"soru": "Tarih araştırmalarında elde edilen verilerin 'yer, zaman ve konu' bakımından bölümlere ayrılması işlemine ne ad verilir?", "secenekler": ["A) Tarama", "B) Tenkit", "C) Terkip", "D) Tasnif", "E) Tahlil"], "cevap": "D) Tasnif", "aciklama": "Tasnif 'sınıflandırma' demektir. Araştırmayı kolaylaştırmak için bilgiler zamana (örn. 15. yy), mekana (örn. Asya) veya konuya (örn. Sanat Tarihi) göre sınıflandırılır."}, {"soru": "Günümüzde kullandığımız Miladi Takvim'in başlangıcı (0 yılı) olarak hangi olay kabul edilir? ", "secenekler": ["A) Hicret", "B) Hz. İsa'nın doğumu", "C) Yazının icadı", "D) İstanbul'un Fethi", "E) Fransız İhtilali"], "cevap": "B) Hz. İsa'nın doğumu", "aciklama": "Miladi takvim Hz. İsa'nın doğumunu (Milat) başlangıç kabul eder. Hicri takvim ise Hicret'i başlangıç alır."}, {"soru": "Dijitalleşme ile birlikte tarihçilerin en çok kullandığı 'arama' yöntemi aşağıdakilerden hangisine dönüşmüştür?", "secenekler": ["A) Kütüphane fişlerini tek tek elle tarama", "B) Sadece sözlü görüşmeler yapma", "C) Anahtar kelimelerle dijital veritabanlarında sorgulama yapma", "D) Kazı yapma", "E) Müze gezme"], "cevap": "C) Anahtar kelimelerle dijital veritabanlarında sorgulama yapma", "aciklama": "Dijitalleşme, fiziksel taramanın yerini 'dijital veritabanlarında anahtar kelime (keyword) arama' yöntemine bırakmıştır."}, {"soru": "'Tarih tekerrürden ibarettir' sözü ne anlama gelmektedir? ", "secenekler": ["A) Tarihi olayların aynen tekrarlandığı", "B) Tarihte benzer sebeplerin benzer sonuçlar doğurabileceği", "C) Tarihçilerin hep aynı şeyleri yazdığı", "D) Tarihin bir bilim olmadığı", "E) Geçmişin unutulması gerektiği"], "cevap": "B) Tarihte benzer sebeplerin benzer sonuçlar doğurabileceği", "aciklama": "Olaylar birebir aynen tekrarlanmaz (zaman ve aktörler değişir), ancak benzer hatalar veya sebepler benzer sonuçlar doğurur. Ders çıkarılması gerektiğini vurgular."}, {"soru": "Aşağıdakilerden hangisi 'Tarihi Olay' (Vaka) ile 'Tarihi Olgu' (Vakıa) arasındaki farkı en iyi açıklar?", "secenekler": ["A) Olay uzun sürelidir, olgu kısa sürelidir.", "B) Olay somut ve başlangıcı-bitişi bellidir, olgu ise bu olayların sonucunda oluşan uzun süreli genel süreçtir.", "C) Olaylar tekrarlanabilir, olgular tekrarlanamaz.", "D) Olayları tarihçiler yazar, olguları sosyologlar yazar.", "E) Malazgirt Savaşı bir olgudur, Anadolu'nun Türkleşmesi bir olaydır."], "cevap": "B) Olay somut ve başlangıcı-bitişi bellidir, olgu ise bu olayların sonucunda oluşan uzun süreli genel süreçtir.", "aciklama": "Olay (Vaka) 'Malazgirt Savaşı' gibi anlıktır ve biter. Olgu (Vakıa) ise 'Anadolu'nun Türkleşmesi' gibi zamanla yayılan soyut süreçtir."}, {"soru": "Tarihçi, eserini yazarken dipnot kullanmaya ve kaynakça belirtmeye büyük özen göstermektedir. Bu durum tarihçinin hangi özelliğini kanıtlar?", "secenekler": ["A) Edebi yeteneğini", "B) Bilimsel ahlaka ve dürüstlüğe (etik) uygun çalıştığını", "C) Çok fazla kitap okuduğunu", "D) Yabancı dil bildiğini", "E) Konuyu çok iyi bildiğini"], "cevap": "B) Bilimsel ahlaka ve dürüstlüğe (etik) uygun çalıştığını", "aciklama": "Bilginin kaynağını göstermek (referans vermek), 'Ben bu bilgiyi uydurmadım, kaynağım budur' demektir. Bu da bilimsel dürüstlüğün ve güvenilirliğin gereğidir."}, {"soru": "Türkler İslamiyet'i kabul ettikten sonra, dini ibadetlerin zamanını belirleyebilmek (Hac, Oruç vb.) amacıyla hangi takvimi kullanmaya başlamışlardır?", "secenekler": ["A) 12 Hayvanlı Türk Takvimi", "B) Miladi Takvim", "C) Rumi Takvim", "D) Hicri Takvim", "E) Celali Takvim"], "cevap": "D) Hicri Takvim", "aciklama": "İslamiyet ile birlikte dini günler Hicri takvime (Ay yılı) göre belirlendiği için Türkler de bu takvimi kullanmaya başlamışlardır."}, {"soru": "Tarihi bir belgenin okunabilmesi için eski yazıların ve alfabelerin bilinmesi gerekir. Bu konuda tarihçiye yardımcı olan bilim dalı hangisidir?", "secenekler": ["A) Paleografya", "B) Nümizmatik", "C) Antropoloji", "D) Heraldik", "E) Kimya"], "cevap": "A) Paleografya", "aciklama": "Paleografya, eski yazı bilimidir. Osmanlıca, Göktürkçe veya Latince bir metni okumak için bu bilime ihtiyaç vardır."}, {"soru": "Osmanlı Devleti'nde mali (ekonomik) işlerin düzenlenmesi amacıyla, Güneş yılı esas alınarak hazırlanan takvim hangisidir?", "secenekler": ["A) Hicri Takvim", "B) Rumi Takvim", "C) Celali Takvim", "D) 12 Hayvanlı Türk Takvimi", "E) Miladi Takvim"], "cevap": "B) Rumi Takvim", "aciklama": "Osmanlı'da vergilerin toplanması (hasat zamanı) ile Hicri takvim uyuşmadığı için, mali işlerde kullanılmak üzere Güneş yılı esaslı Rumi Takvim geliştirilmiştir."}, {"soru": "5T kuralına göre 'Tahlil' aşamasında elde edilen veriler yeterli bulunmazsa ne yapılmalıdır?", "secenekler": ["A) Terkip aşamasına geçilmelidir.", "B) Eldeki verilerle yetinilmelidir.", "C) Tarama (Kaynak arama) aşamasına geri dönülmelidir.", "D) Konu değiştirilmelidir.", "E) Tenkit yapılmadan eser yazılmalıdır."], "cevap": "C) Tarama (Kaynak arama) aşamasına geri dönülmelidir.", "aciklama": "Tahlil (Çözümleme) aşaması bir nevi kontrol noktasıdır. Eğer bilgi eksikse sentez yapılamaz, tekrar başa dönüp yeni kaynak aranmalıdır."}, {"soru": "Tarih öğrenimi, bireylerde 'Empati' yeteneğini geliştirir. Bu yetenek bireye günlük hayatta nasıl bir katkı sağlar?", "secenekler": ["A) Olayları sadece kendi penceresinden görmesini sağlar.", "B) Farklı kültürlere ve insanlara karşı önyargısız ve hoşgörülü yaklaşmasını sağlar.", "C) Geçmişte yaşamak istemesine neden olur.", "D) Sadece kendi milletini sevmesini sağlar.", "E) Ekonomik kazanç sağlar."], "cevap": "B) Farklı kültürlere ve insanlara karşı önyargısız ve hoşgörülü yaklaşmasını sağlar.", "aciklama": "Empati, başkasının yerine kendini koyabilmektir. Tarih öğrenen kişi, farklı toplumların neden farklı davrandığını anlar ve bu da hoşgörüyü artırır."}, {"soru": "Dijital tarihçilikte 'Born-digital' (Doğuştan dijital) olmayan, sonradan dijitalleştirilmiş kaynaklara ne ad verilir?", "secenekler": ["A) Birinci el kaynak", "B) Dijitalleştirilmiş (Digitized) kaynak", "C) Sözlü kaynak", "D) Yapay zeka", "E) Büyük veri"], "cevap": "B) Dijitalleştirilmiş (Digitized) kaynak", "aciklama": "Kağıt üzerindeki bir belgenin taranıp PDF yapılması veya fotoğrafının çekilmesi işlemine 'Dijitalleştirme' (Digitization), kaynağa ise 'Dijitalleştirilmiş kaynak' denir."}, {"soru": "Müzelerde bulunan eski paralar, mühürler ve armalar tarihçiye hangi açıdan bilgi VERMEZ?", "secenekler": ["A) Dönemin ekonomik durumu", "B) Hükümdarın saltanat sembolleri", "C) Devletin sanatsal anlayışı", "D) Olayın geçtiği günün hava durumu", "E) Kullanılan yazı ve alfabe"], "cevap": "D) Olayın geçtiği günün hava durumu", "aciklama": "Paralar ve armalar devletin gücünü, ekonomisini ve sanatını gösterir ancak o günkü iklim veya hava durumu hakkında bilgi vermez."}, {"soru": "Tarih araştırmalarında 'Terkip' (Sentez) aşaması neden bir yapbozun parçalarını birleştirmeye benzetilir?", "secenekler": ["A) Parçalar her zaman eksik olduğu için", "B) Farklı kaynaklardan doğrulanan bilgilerin anlamlı bir bütün haline getirildiği aşama olduğu için", "C) Çok eğlenceli olduğu için", "D) Rastgele yapıldığı için", "E) Hata kabul etmediği için"], "cevap": "B) Farklı kaynaklardan doğrulanan bilgilerin anlamlı bir bütün haline getirildiği aşama olduğu için", "aciklama": "Araştırmanın başında dağınık olan bilgiler (yapboz parçaları), Terkip aşamasında birleştirilerek ortaya okunabilir, anlamlı bir 'resim' (tarih kitabı/makalesi) çıkar."}, {"soru": "Karbon-14 metodu, tarihçilere hangi konuda kesin kanıtlar sunar? ", "secenekler": ["A) Bir metnin yazarının kim olduğu", "B) Tarihi bir savaşın nedenleri", "C) Organik buluntuların (kemik, ahşap vb.) yaşı", "D) Bir toplumun dini inançları", "E) Kültürel etkileşimler"], "cevap": "C) Organik buluntuların (kemik, ahşap vb.) yaşı", "aciklama": "Kimya biliminin bir yöntemi olan Karbon-14, organik maddelerin ne kadar zaman önce öldüğünü (yaşını) hesaplamaya yarar. Tarihlendirme için kritiktir."}, {"soru": "Dijitalleşmenin tarih araştırmalarına getirdiği 'Erişilebilirlik' kolaylığı, beraberinde hangi zorluğu getirmiştir?", "secenekler": ["A) Kaynak bulamama", "B) Bilgi kirliliği ve güvenilirlik sorunu", "C) Kütüphanelerin kapanması", "D) Tarihçilerin sayısının azalması", "E) Kitap okumanın yasaklanması"], "cevap": "B) Bilgi kirliliği ve güvenilirlik sorunu", "aciklama": "Herkesin internete içerik yükleyebilmesi, doğru bilgi ile yanlış bilginin birbirine karışmasına (Bilgi kirliliği) neden olmuştur. Ayıklamak zorlaşmıştır."}, {"soru": "Bir tarihçi Orta Asya Türk tarihini araştırırken Çin kaynaklarına da bakmak zorundadır. Bunun temel nedeni nedir?", "secenekler": ["A) Çin kaynaklarının daha süslü olması", "B) Türklerin o dönemde yazılı hayata geçmemiş olması ve yerleşik Çinlilerin Türkler hakkında kayıt tutması", "C) Çince öğrenmek istemesi", "D) Türk kaynaklarının yasaklanmış olması", "E) Çinlilerin Türkleri çok sevmesi"], "cevap": "B) Türklerin o dönemde yazılı hayata geçmemiş olması ve yerleşik Çinlilerin Türkler hakkında kayıt tutması", "aciklama": "Göçebe toplumlar (Türkler) daha az yazılı belge bırakır. Yerleşik komşular (Çin, Bizans) ise bürokrasi gereği komşuları hakkında detaylı kayıt tutar."}, {"soru": "Aşağıdakilerden hangisi 'İkinci El Kaynak' örneğidir? ", "secenekler": ["A) Halil İnalcık'ın yazdığı tarih kitabı", "B) İstiklal Savaşı'nda kullanılan bir tüfek", "C) Lidyalılara ait bir para", "D) Kadeş Antlaşması tableti", "E) Orhun Abideleri"], "cevap": "A) Halil İnalcık'ın yazdığı tarih kitabı", "aciklama": "İstiklal Savaşı tüfeği, Lidya parası, Kadeş tableti ve Orhun Abideleri o döneme aittir (Birinci el). Halil İnalcık'ın kitabı ise o kaynaklar incelenerek sonradan yazılmıştır (İkinci el)."}, {"soru": "Tarih biliminde 'Genelleme Yapılamaz' ilkesi neyi ifade eder? ", "secenekler": ["A) Tarihi olayların hepsi birbirinin aynısıdır.", "B) Bir olaydaki kural, başka bir olaya aynen uygulanamaz; her olay kendine has koşullar taşır.", "C) Bütün savaşların sonucu aynıdır.", "D) Tarihçiler genel konuşmayı sever.", "E) Tarih fen bilimleri gibidir, formülleri vardır."], "cevap": "B) Bir olaydaki kural, başka bir olaya aynen uygulanamaz; her olay kendine has koşullar taşır.", "aciklama": "Fen bilimlerinde 'su 100 derecede kaynar' genellemesi vardır. Tarihte ise 'Her ekonomik kriz savaşa yol açar' gibi kesin bir genelleme yapılamaz."}, {"soru": "Tarihsel bilginin 'mutlak doğru' (değişmez) olmamasının temel sebebi nedir?", "secenekler": ["A) Tarihçilerin sürekli yalan söylemesi", "B) Tarihsel belgelerin eksik kalabilmesi ve yeni bulunan belgelerin mevcut bilgiyi değiştirme potansiyeli", "C) Geçmişin önemsiz olması", "D) Devletlerin tarihi sürekli değiştirmesi", "E) Tarihin bilim olmaması"], "cevap": "B) Tarihsel belgelerin eksik kalabilmesi ve yeni bulunan belgelerin mevcut bilgiyi değiştirme potansiyeli", "aciklama": "Tarih dinamik bir süreçtir. Bugün 'kesin' bildiğimiz bir bilgi, yarın yapılacak bir kazıda bulunacak yeni bir tablet ile tamamen değişebilir."}, {"soru": "Dijital tarihçilikte kullanılan 'Veri Madenciliği' (Data Mining) yöntemi tarihçiye ne sağlar?", "secenekler": ["A) Toprağı kazıp tarihi eser bulmayı", "B) Büyük veri yığınları içindeki gizli örüntüleri, ilişkileri ve eğilimleri bilgisayar algoritmalarıyla ortaya çıkarmayı", "C) Sadece resimleri taramayı", "D) Bilgisayar oyunları tasarlamayı", "E) Eski bilgisayarları tamir etmeyi"], "cevap": "B) Büyük veri yığınları içindeki gizli örüntüleri, ilişkileri ve eğilimleri bilgisayar algoritmalarıyla ortaya çıkarmayı", "aciklama": "Klasik madencilik toprağı kazar, veri madenciliği ise milyonlarca veriyi (nüfus kayıtları, ticaret defterleri vb.) işleyerek insan beyninin göremeyeceği trendleri bulur."}, {"soru": "'Tarih yazmak, tarih yapmak kadar mühimdir. Yazan yapana sadık kalmazsa değişmeyen hakikat, insanlığı şaşırtacak bir mahiyet alır.' (M. Kemal Atatürk). Atatürk bu sözüyle tarihçiliğin hangi ilkesine vurgu yapmıştır? ", "secenekler": ["A) Öznellik", "B) Objektiflik (Nesnellik)", "C) Anakronizm", "D) Edebi üslup", "E) Kronolojik sıralama"], "cevap": "B) Objektiflik (Nesnellik)", "aciklama": "'Yazan yapana sadık kalmalı' demek, olay nasıl olduysa (yapan), tarihçi de onu değiştirmeden, tarafsızca (yazan) aktarmalıdır demektir. Bu da objektiflik ilkesidir."}, {"soru": "Tarih araştırmalarında 'Nedensellik' (Determinizm) ilkesi incelenirken dikkat edilmesi gereken en önemli nokta nedir?", "secenekler": ["A) Her olayın sadece tek bir nedeni olduğunu savunmak", "B) Olayların tek bir nedene indirgenemeyeceğini, çok boyutlu (siyasi, ekonomik, sosyal) nedenler zinciri olduğunu görmek", "C) Nedenlerin sonuçlardan daha önemsiz olduğunu düşünmek", "D) Sadece kahramanların kararlarına odaklanmak", "E) Olayları tesadüflere bağlamak"], "cevap": "B) Olayların tek bir nedene indirgenemeyeceğini, çok boyutlu (siyasi, ekonomik, sosyal) nedenler zinciri olduğunu görmek", "aciklama": "Toplumsal olaylar laboratuvar deneyi gibi tek bir nedene (etkiye) bağlı değildir. Bir savaşın hem ekonomik, hem dini, hem de psikolojik nedenleri olabilir (Çok boyutluluk)."}, {"soru": "Sözlü tarih çalışmaları (Oral History), yazılı belgelerin yetersiz kaldığı durumlarda çok değerlidir. Ancak sözlü tarihin en büyük 'handikapı' (dezavantajı) nedir? ", "secenekler": ["A) Kaynak kişiye ulaşmanın zor olması", "B) İnsan hafızasının yanıltıcı olabilmesi ve anlatıcının olayları kendi açısından (sübjektif) hatırlaması", "C) Ses kayıt cihazlarının pahalı olması", "D) Sözlü tarihin çok zaman alması", "E) Kimsenin konuşmak istememesi"], "cevap": "B) İnsan hafızasının yanıltıcı olabilmesi ve anlatıcının olayları kendi açısından (sübjektif) hatırlaması", "aciklama": "İnsan beyni geçmişi olduğu gibi değil, hatırlamak istediği gibi kurgular. Aradan yıllar geçince detaylar unutulur veya değiştirilir. Bu yüzden sözlü tarih verisi mutlaka teyit edilmelidir."}],
-        test3: [{"soru": "Tarih biliminin yöntemi, diğer pozitif bilimlerden (Fizik, Kimya vb.) hangi yönüyle temelden ayrılır?", "secenekler": ["A) Gözlem yapmasıyla", "B) Deney yapılamamasıyla", "C) Rapor tutmasıyla", "D) Araştırma yapmasıyla", "E) Sonuç çıkarmasıyla"], "cevap": "B) Deney yapılamamasıyla", "aciklama": "Tarihi olaylar geçmişte yaşanıp bitmiştir, tekrarlanamaz. Bu yüzden laboratuvar ortamında 'deney' yapılamaz. Bu, tarihin en temel metodolojik farkıdır."}, {"soru": "'Olay' (Vaka) ve 'Olgu' (Vakıa) kavramları düşünüldüğünde, aşağıdakilerden hangisi bir 'Tarihi Olay' örneğidir?", "secenekler": ["A) Anadolu'nun Türkleşmesi", "B) Türkiye'nin çağdaşlaşması", "C) İstanbul'un Fethi (1453)", "D) İslamiyet'in yayılması", "E) Milliyetçilik akımının güçlenmesi"], "cevap": "C) İstanbul'un Fethi (1453)", "aciklama": "İstanbul'un Fethi, başlangıç ve bitiş tarihi belli, somut ve tekil bir gelişmedir, yani 'Olay'dır. Diğer şıklar ise zaman içine yayılan süreçleri (Olgu) ifade eder."}, {"soru": "Tarih araştırmalarında 'birinci elden kaynak' (ana kaynak) aşağıdakilerden hangisidir?", "secenekler": ["A) Olayın geçtiği döneme ait her türlü bulgu ve belge", "B) Ders kitapları", "C) Ansiklopediler", "D) Tarihi romanlar", "E) Öğretmen notları"], "cevap": "A) Olayın geçtiği döneme ait her türlü bulgu ve belge", "aciklama": "Olayın yaşandığı ana tanıklık eden, o dönemden kalan para, ferman, silah, kıyafet vb. her şey birinci elden kaynaktır."}, {"soru": "Türklerin kullandığı takvimlerden hangisi 'Güneş Yılı' esasına dayanmaz? ", "secenekler": ["A) 12 Hayvanlı Türk Takvimi", "B) Celali Takvim", "C) Rumi Takvim", "D) Hicri Takvim", "E) Miladi Takvim"], "cevap": "D) Hicri Takvim", "aciklama": "Hicri Takvim, Ay'ın dünya etrafındaki dönüşünü (Ay Yılı) esas alır. Diğer takvimlerin hepsi Dünya'nın Güneş etrafındaki dönüşünü esas alır."}, {"soru": "Tarihi olayların doğru değerlendirilebilmesi için olayın geçtiği 'yer' ve 'zaman'ın bilinmesi neden zorunludur?", "secenekler": ["A) Ezber yapmayı kolaylaştırmak için", "B) Olayın neden-sonuç ilişkisini kurabilmek ve o günün şartlarına göre değerlendirebilmek için", "C) Kitapları kalınlaştırmak için", "D) Sadece savaşları incelemek için", "E) Harita çizebilmek için"], "cevap": "B) Olayın neden-sonuç ilişkisini kurabilmek ve o günün şartlarına göre değerlendirebilmek için", "aciklama": "Bir olayın nedenini anlamak için ne zaman (hangi şartlarda) ve nerede (hangi coğrafi koşullarda) olduğunu bilmek şarttır."}, {"soru": "Aşağıdakilerden hangisi 'Tarih Yazıcılığı' türlerinden biri olan 'Hikayeci Tarih'in en bilinen temsilcisidir?", "secenekler": ["A) Heredot", "B) Halil İnalcık", "C) Thukydides", "D) İlber Ortaylı", "E) Voltaire"], "cevap": "A) Heredot", "aciklama": "Herodot, 'Tarihin Babası' olarak bilinir ve olayları efsanelerle süsleyerek anlattığı için 'Hikayeci (Rivayetçi) Tarih'in kurucusu kabul edilir."}, {"soru": "Eski paraları inceleyerek tarihe yardımcı olan bilim dalı hangisidir? ", "secenekler": ["A) Coğrafya", "B) Nümizmatik", "C) Kimya", "D) Biyoloji", "E) Sosyoloji"], "cevap": "B) Nümizmatik", "aciklama": "Nümizmatik (veya Meskukat), eski paraları, üzerindeki yazıları ve sembolleri inceleyen bilim dalıdır."}, {"soru": "Tarih araştırmasının 5T basamağından ilki olan 'Tarama' ne anlama gelir?", "secenekler": ["A) Kaynakların okunması", "B) Kaynakların sınıflandırılması", "C) Kaynak arama ve toplama", "D) Kaynakların eleştirilmesi", "E) Eserin yazılması"], "cevap": "C) Kaynak arama ve toplama", "aciklama": "Tarama, konuyla ilgili var olan tüm belgelerin, kitapların ve bulguların araştırılıp bulunması (kütüphane/arşiv taraması) işlemidir."}, {"soru": "Aşağıdaki takvimlerden hangisi Türklerin İslamiyet'i kabulünden ÖNCE kullandığı takvimdir?", "secenekler": ["A) Hicri Takvim", "B) Rumi Takvim", "C) Celali Takvim", "D) 12 Hayvanlı Türk Takvimi", "E) Miladi Takvim"], "cevap": "D) 12 Hayvanlı Türk Takvimi", "aciklama": "İslamiyet öncesi Orta Asya Türk devletleri (Göktürkler, Uygurlar vb.) 12 Hayvanlı Türk Takvimi'ni kullanmışlardır."}, {"soru": "Dijital kütüphanelerin araştırmacılara sağladığı 'mekandan bağımsızlık' ne demektir? ", "secenekler": ["A) Kütüphanelerin kapanması", "B) Araştırmacının evinden veya ofisinden dünyanın herhangi bir yerindeki arşive ulaşabilmesi", "C) Sadece uzayla ilgili araştırma yapılması", "D) Tarihçilerin seyahat etmesinin yasaklanması", "E) Binaların yıkılması"], "cevap": "B) Araştırmacının evinden veya ofisinden dünyanın herhangi bir yerindeki arşive ulaşabilmesi", "aciklama": "Eskiden bir belge için o ülkeye gitmek gerekirken, dijitalleşme sayesinde internet üzerinden her yerden erişim (mekandan bağımsızlık) sağlanmıştır."}, {"soru": "Fatih Sultan Mehmet dönemini araştıran bir tarihçinin, o döneme ait 'altın paraları' ve 'fermanları' incelemesi, aşağıdaki kaynak türlerinden hangilerine başvurduğunu gösterir?", "secenekler": ["A) Sadece Sözlü Kaynaklar", "B) Yazılı Kaynaklar ve Kalıntı/Nesne Kaynaklar", "C) Sadece Görsel Kaynaklar", "D) İkinci El Kaynaklar", "E) Dijital Kaynaklar"], "cevap": "B) Yazılı Kaynaklar ve Kalıntı/Nesne Kaynaklar", "aciklama": "Fermanlar 'Yazılı Kaynak', paralar ise üzerindeki yazıya rağmen temel olarak 'Nesne/Kalıntı' (Arkeolojik/Nümizmatik) kaynak grubuna girer. İkisi birlikte kullanılmıştır."}, {"soru": "Tarih biliminde 'Neden-Sonuç' ilişkisi neden bu kadar önemlidir? ", "secenekler": ["A) Olayları ezberlemeyi kolaylaştırdığı için", "B) Tarihi bir masal olmaktan çıkarıp, olaylar arasındaki sürekliliği ve mantıksal bağı kurduğu için", "C) Tarihçilerin işini zorlaştırdığı için", "D) Sınav soruları hazırlamak için", "E) Geleceği kesin olarak bilmek için"], "cevap": "B) Tarihi bir masal olmaktan çıkarıp, olaylar arasındaki sürekliliği ve mantıksal bağı kurduğu için", "aciklama": "Tarih, kopuk olaylar yığını değildir. Bir olayın sonucu, diğerinin nedenidir. Bu zinciri kurmak (nedensellik), tarihin bilimsel niteliğinin temelidir."}, {"soru": "Celali Takvim ve Rumi Takvim'in ortak özelliği aşağıdakilerden hangisidir?", "secenekler": ["A) İkisinin de Ay yılı esaslı olması", "B) İkisinin de sadece Türkler tarafından kullanılması", "C) İkisinin de mali (ekonomik) işleri düzenlemek amacıyla hazırlanmış Güneş yılı esaslı takvimler olması", "D) Başlangıçlarının Hz. İsa'nın doğumu olması", "E) Günümüzde hala resmi takvim olarak kullanılmaları"], "cevap": "C) İkisinin de mali (ekonomik) işleri düzenlemek amacıyla hazırlanmış Güneş yılı esaslı takvimler olması", "aciklama": "Büyük Selçuklu (Celali) ve Osmanlı (Rumi), vergilerin toplanma zamanını (hasat mevsimini) sabitlemek için Güneş yılı esaslı bu takvimleri mali amaçla kullanmıştır."}, {"soru": "Tarih öncesi çağları (Taş Devri, Maden Devri) araştıran bir tarihçi, aşağıdaki yardımcı bilimlerden hangisinden YARARLANAMAZ?", "secenekler": ["A) Arkeoloji (Kazı Bilimi)", "B) Paleografya (Yazı Bilimi)", "C) Kimya (Karbon-14)", "D) Antropoloji (Irk Bilimi)", "E) Coğrafya"], "cevap": "B) Paleografya (Yazı Bilimi)", "aciklama": "Tarih öncesi devirler, 'yazının icadından önceki' devirlerdir. Dolayısıyla yazı bilimi olan Paleografya bu dönemde kullanılamaz."}, {"soru": "Dijital tarihçilikte 'veri güvenliği' neden önemli bir sorundur? ", "secenekler": ["A) Bilgisayarların pahalı olması", "B) Dijital verilerin siber saldırılarla değiştirilebilir, silinebilir veya manipüle edilebilir olması", "C) Tarihçilerin şifrelerini unutması", "D) İnternetin yavaş olması", "E) Kağıt kullanımının artması"], "cevap": "B) Dijital verilerin siber saldırılarla değiştirilebilir, silinebilir veya manipüle edilebilir olması", "aciklama": "Kağıt üzerindeki bir belgeyi değiştirmek zordur ve iz bırakır. Ancak dijital veriler, siber saldırılarla fark edilmeden değiştirilebilir (Manipülasyon riski)."}, {"soru": "Bir tarih araştırmasında kaynakların 'güvenilirliğinin' sorgulandığı, yazarın taraflı olup olmadığının incelendiği aşama hangisidir?", "secenekler": ["A) Tarama", "B) Tasnif", "C) Tahlil", "D) Tenkit (Eleştiri)", "E) Terkip (Sentez)"], "cevap": "D) Tenkit (Eleştiri)", "aciklama": "Tenkit (Eleştiri), kaynağın doğruluğunun süzgeçten geçirildiği aşamadır. 'Yazar doğru söylüyor mu, taraf tutuyor mu?' soruları burada sorulur."}, {"soru": "'Öğretici Tarih' (Pragmatik Tarih) anlayışının temel amacı nedir? ", "secenekler": ["A) Sadece gerçekleri anlatmak", "B) Topluma ahlaki dersler vermek, milli duyguları güçlendirmek ve kahramanlıkları öne çıkarmak", "C) Olayları neden-sonuç ilişkisi içinde incelemek", "D) Efsaneleri tamamen reddetmek", "E) Kronolojik sıralama yapmak"], "cevap": "B) Topluma ahlaki dersler vermek, milli duyguları güçlendirmek ve kahramanlıkları öne çıkarmak", "aciklama": "Öğretici tarih, geçmişteki kahramanlıkları anlatarak gelecek nesillere model oluşturmayı, ders vermeyi ve milli birliği sağlamayı hedefler."}, {"soru": "Mısır hiyerogliflerini veya Göktürk kitabelerini okumak isteyen bir tarihçi, öncelikle hangi alanda uzmanlaşmalıdır?", "secenekler": ["A) Paleografya ve Epigrafya", "B) Nümizmatik ve Kimya", "C) Coğrafya ve Arkeoloji", "D) Heraldik ve Sigillografya", "E) Etnografya ve İstatistik"], "cevap": "A) Paleografya ve Epigrafya", "aciklama": "Paleografya eski alfabeleri okur, Epigrafya ise sert cisimler (taş/kitabe) üzerindeki yazıları inceler. Kitabeleri okumak için bu ikisi şarttır."}, {"soru": "Aşağıdakilerden hangisi dijitalleşmenin tarih araştırmalarına sağladığı 'demokratikleşme' etkisine örnektir?", "secenekler": ["A) Sadece profesörlerin arşivlere girebilmesi", "B) Sıradan insanların da kendi aile arşivlerini, fotoğraflarını dijital platformlarda paylaşarak tarih yazımına veri sunabilmesi", "C) Devletin tüm belgeleri gizlemesi", "D) Tarih kitaplarının sadece üniversitelerde satılması", "E) İnternetin ücretli olması"], "cevap": "B) Sıradan insanların da kendi aile arşivlerini, fotoğraflarını dijital platformlarda paylaşarak tarih yazımına veri sunabilmesi", "aciklama": "Tarih eskiden sadece devletlerin tarihiyken, dijitalleşme ile halkın, yerel toplulukların ve bireylerin tarihi de görünür hale gelmiştir."}, {"soru": "'Kronoloji bilimi olmadan tarih kördür.' sözü neyi ifade eder?", "secenekler": ["A) Tarihçilerin gözlük takması gerektiğini", "B) Olayların oluş sırası bilinmezse, neden-sonuç ilişkisinin kurulamayacağını ve olayın anlaşılamayacağını", "C) Tarihin bir sanat dalı olduğunu", "D) Zamanın önemsiz olduğunu", "E) Coğrafyanın daha önemli olduğunu"], "cevap": "B) Olayların oluş sırası bilinmezse, neden-sonuç ilişkisinin kurulamayacağını ve olayın anlaşılamayacağını", "aciklama": "Nedenler sonuçlardan önce gelir. Eğer olayların sırasını (Kronoloji) bilmezsek, hangisinin diğerine sebep olduğunu anlayamayız, tarih karmaşaya döner."}, {"soru": "Tarih araştırmalarında yapılan 'Anakronizm' (Tarih Yanılgısı) hatasına aşağıdakilerden hangisi örnektir?", "secenekler": ["A) Fatih Sultan Mehmet'in portresini İtalyan ressama yaptırması", "B) Osmanlı Devleti'nde telefon hatlarının kurulduğunun iddia edilmesi (16. yüzyıl için)", "C) Sümerlerin Ziggurat yapması", "D) Mısırlıların Güneş takvimini bulması", "E) Türklerin atı evcilleştirmesi"], "cevap": "B) Osmanlı Devleti'nde telefon hatlarının kurulduğunun iddia edilmesi (16. yüzyıl için)", "aciklama": "Telefon 19. yüzyılda icat edilmiştir. 16. yüzyılda (Kanuni dönemi) telefondan bahsetmek, o döneme ait olmayan bir nesneyi o zamana koymak (Anakronizm) hatasıdır."}, {"soru": "Dijital Tarihçilikte, 'Born-digital' (Doğuştan dijital) kaynaklar ile 'Digitized' (Dijitalleştirilmiş) kaynaklar arasındaki temel fark nedir?", "secenekler": ["A) Born-digital kaynakların kağıt formatının hiç olmaması, doğrudan dijital ortamda üretilmesi; diğerinin ise sonradan taranmasıdır.", "B) Born-digital kaynakların daha eski olmasıdır.", "C) Digitized kaynakların güvenilmez olmasıdır.", "D) Aralarında bir fark yoktur.", "E) Born-digital kaynakların sadece resim olmasıdır."], "cevap": "A) Born-digital kaynakların kağıt formatının hiç olmaması, doğrudan dijital ortamda üretilmesi; diğerinin ise sonradan taranmasıdır.", "aciklama": "Bir e-posta veya tweet 'doğuştan dijital'dir, orijinali kağıt değildir. Bir el yazması kitabın taranmış hali ise 'dijitalleştirilmiş' kaynaktır."}, {"soru": "Tarihsel bilginin üretim sürecinde 'Terkip' (Sentez) aşaması neden en yaratıcı aşama olarak kabul edilir?", "secenekler": ["A) Çünkü tarihçi burada hayal gücünü kullanarak olayları uydurur.", "B) Çünkü tarihçi, topladığı ve doğruladığı dağınık bilgileri kendi bakış açısı ve yorumuyla birleştirerek yeni bir eser ortaya koyar.", "C) Çünkü bu aşamada kaynak kullanılmaz.", "D) Çünkü en kısa süren aşamadır.", "E) Çünkü sadece resimler birleştirilir."], "cevap": "B) Çünkü tarihçi, topladığı ve doğruladığı dağınık bilgileri kendi bakış açısı ve yorumuyla birleştirerek yeni bir eser ortaya koyar.", "aciklama": "Terkip, sadece bilgileri alt alta dizmek değildir. Tarihçinin o bilgileri anlamlı bir kurguyla, edebi bir dille ve analizle birleştirdiği, eserin 'yazarın imzasını' taşıdığı aşamadır."}, {"soru": "Halil İnalcık'ın tarihçilik anlayışında 'Belgesiz tarih olmaz' ilkesi, metodolojik olarak neyi zorunlu kılar?", "secenekler": ["A) Olayların sadece kulaktan dolma bilgilerle yazılmasını", "B) Tarihçinin arşivlerde çalışarak birincil kaynaklara (ana kaynak) ulaşmasını", "C) Tarihin sadece siyasi olayları incelemesini", "D) Yabancı kaynakların reddedilmesini", "E) Ders kitaplarının tek kaynak olmasını"], "cevap": "B) Tarihçinin arşivlerde çalışarak birincil kaynaklara (ana kaynak) ulaşmasını", "aciklama": "Modern tarihçiliğin (Bilimsel Tarih) temeli belgedir. Halil İnalcık, yorumdan önce arşiv belgesinin (Arşivperestlik değil ama belgeye dayalı yorum) esas olduğunu vurgular."}, {"soru": "Karbon-14 (C-14) metodu, arkeolojik buluntuların tarihlendirilmesinde kullanılır. Ancak bu metot her buluntuda kullanılamaz. Bu metodun kısıtlılığı nedir?", "secenekler": ["A) Sadece metal eşyalarda kullanılabilmesi", "B) Sadece organik (bir zamanlar canlı olan: kemik, ahşap, kumaş) maddelerde kullanılabilmesi", "C) Sadece su altı buluntularında çalışması", "D) Çok ucuz olması", "E) 100 yıllık eşyaları ölçememesi"], "cevap": "B) Sadece organik (bir zamanlar canlı olan: kemik, ahşap, kumaş) maddelerde kullanılabilmesi", "aciklama": "C-14, canlı organizmaların ölümüyle azalan radyoaktif karbonu ölçer. Taş, metal veya pişmiş toprak (seramik) organik olmadığı için bu yöntemle doğrudan tarihlenemez."}, {"soru": "Bir tarihçinin 'Sigillografya' (Mühür Bilimi) ve 'Heraldik' (Arma Bilimi) bilimlerinden yararlanması, aşağıdaki konulardan hangisini aydınlatmasına EN ÇOK yardımcı olur?", "secenekler": ["A) Halkın günlük yeme içme alışkanlıklarını", "B) Devletlerin resmi yazışma kurallarını, hükümdarlık sembollerini ve soyluluk ünvanlarını", "C) Coğrafi iklim şartlarını", "D) O dönemin müzik anlayışını", "E) Tarım aletlerinin yapısını"], "cevap": "B) Devletlerin resmi yazışma kurallarını, hükümdarlık sembollerini ve soyluluk ünvanlarını", "aciklama": "Mühürler ve armalar, devletin gücünü, hanedanların sembollerini ve bürokrasiyi temsil eder. Siyasi ve diplomatik tarih için kritiktir."}, {"soru": "'Tarihsel Empati' (Geçmişe Bakış) yaparken düşülen en büyük tuzak, bugünün değer yargılarını geçmişe taşımaktır. Aşağıdakilerden hangisi bu tuzağa düşmeyen, doğru bir tarihsel bakış açısıdır?", "secenekler": ["A) 'Kardeş katli yasası çok vahşice, Osmanlı yöneticileri katilmiş.' demek.", "B) 'O dönemde devletin parçalanmasını önlemek (Nizam-ı Alem) için, dönemin şartlarında bu uygulama zorunlu görülmüştür.' demek.", "C) 'Eski insanlar insan haklarını hiç bilmiyormuş.' diye yargılamak.", "D) 'Geçmişte yaşayanlar bizden daha zekiydi.' demek.", "E) Olayları görmezden gelmek."], "cevap": "B) 'O dönemde devletin parçalanmasını önlemek (Nizam-ı Alem) için, dönemin şartlarında bu uygulama zorunlu görülmüştür.' demek.", "aciklama": "Doğru tarihsel bakış (Empati), olayı bugünün insan hakları evrensel beyannamesine göre değil, o günün 'devletin bekası' anlayışına göre analiz etmektir."}, {"soru": "Dijital beşeri bilimler (Digital Humanities) kapsamında kullanılan 'Veri Madenciliği', tarihçiye klasik yöntemlerle göremeyeceği neyi gösterir?", "secenekler": ["A) Tek bir belgenin içeriğini", "B) Binlerce belge arasındaki gizli örüntüleri (pattern), örneğin yüzyıllar içindeki kelime kullanım sıklığının değişimini veya ticaret rotalarındaki yoğunluğu", "C) Belgelerin hangi kağıda yazıldığını", "D) Yazarın el yazısının güzelliğini", "E) Kitabın kapak rengini"], "cevap": "B) Binlerce belge arasındaki gizli örüntüleri (pattern), örneğin yüzyıllar içindeki kelime kullanım sıklığının değişimini veya ticaret rotalarındaki yoğunluğu", "aciklama": "İnsan gözüyle 10.000 belgeyi analiz edip ortak bir eğilimi görmek imkansızdır. Veri madenciliği, 'Büyük Veri' içindeki bu makro değişimleri grafikleştirir."}, {"soru": "Tarih felsefesinde 'Tarih, tarihçinin zihninde yeniden inşa edilir' görüşü, aşağıdakilerden hangisini savunur?", "secenekler": ["A) Geçmişin olduğu gibi, %100 objektif şekilde aktarılabileceğini", "B) Tarihin tamamen kurgusal bir roman olduğunu", "C) Geçmişin kendisi ile tarih kitabı arasındaki farkı; tarihçinin seçiciliğinin ve yorumunun kaçınılmaz olduğunu", "D) Tarihçilerin hafızasının çok güçlü olduğunu", "E) Tarihin bilim olmadığını"], "cevap": "C) Geçmişin kendisi ile tarih kitabı arasındaki farkı; tarihçinin seçiciliğinin ve yorumunun kaçınılmaz olduğunu", "aciklama": "Geçmiş 'yaşanmış bitmiştir'. Tarih kitabı ise o geçmişin tarihçi tarafından seçilen parçalarla 'yeniden kurgulanmış' halidir. Mutlak ayna değildir."}, {"soru": "Aşağıdaki yardımcı bilim eşleştirmelerinden hangisi, verdiği bilgi türü bakımından YANLIŞTIR?", "secenekler": ["A) Epigrafya - Kitabeler üzerindeki yazılar", "B) Antropoloji - İnsan ırklarının fiziksel özellikleri ve kültürleri", "C) Filoloji - Dillerin yapısı ve gelişimi", "D) Etnografya - Toplumların örf, adet ve kültürel eşyaları", "E) Paleografya - Eski paraların ekonomik değeri"], "cevap": "E) Paleografya - Eski paraların ekonomik değeri", "aciklama": "Paleografya 'Eski Yazı' bilimidir, paraları incelemez. Paraları inceleyen bilim dalı 'Nümizmatik'tir. Bu çeldirici, zor seviye bir bilgi sorusudur."}]
+        test2: [{"soru": "İnsan topluluklarının geçmişteki yaşayışlarını, kültürlerini, birbirleriyle olan ilişkilerini yer ve zaman göstererek, neden-sonuç ilişkisi içinde inceleyen bilim dalı aşağıdakilerden hangisidir?", "secenekler": ["A) Sosyoloji", "B) Tarih", "C) Arkeoloji", "D) Coğrafya", "E) Felsefe"], "cevap": "B) Tarih", "aciklama": "Verilen tanım, tarih biliminin en temel ve kapsamlı tanımıdır."}, {"soru": "Tarih öncesi dönemlerin (yazının icadından önceki devirler) aydınlatılmasında tarih bilimine en çok yardımcı olan bilim dalı hangisidir?", "secenekler": ["A) Diplomasi", "B) Nümizmatik", "C) Paleografya", "D) Arkeoloji", "E) Epigrafya"], "cevap": "D) Arkeoloji", "aciklama": "Yazı yoksa arkeoloji (kazı) en önemli kaynaktır."}, {"soru": "Türklerin tarih boyunca kullandığı takvimlerden hangisi 'Ay Yılı' esaslıdır?", "secenekler": ["A) 12 Hayvanlı Türk Takvimi", "B) Celali Takvim", "C) Hicri Takvim", "D) Rumi Takvim", "E) Miladi Takvim"], "cevap": "C) Hicri Takvim", "aciklama": "Sadece Hicri takvim Ay yılına göredir."}, {"soru": "Tarihi olayların zamanının belirlenmesinde ve sıralanmasında tarihe yardımcı olan 'Zaman Bilimi' aşağıdakilerden hangisidir?", "secenekler": ["A) Kronoloji", "B) Coğrafya", "C) Etnografya", "D) Heraldik", "E) Kimya"], "cevap": "A) Kronoloji", "aciklama": "Kronoloji zaman ve sıralama bilimidir."}, {"soru": "Tarih biliminin konusu aşağıdakilerden hangisini kapsamaz?", "secenekler": ["A) Savaşlar ve barışlar", "B) Depremlerin oluşum mekanizması", "C) Göçler", "D) İbadet şekilleri", "E) Devlet yönetimleri"], "cevap": "B) Depremlerin oluşum mekanizması", "aciklama": "Doğa olaylarının oluşumu Fen bilimlerinin konusudur."}, {"soru": "Aşağıdakilerden hangisi tarih araştırmalarında kullanılan 'Görsel Kaynaklar' grubunda yer alır?", "secenekler": ["A) Tabletler", "B) Fotoğraflar", "C) Efsaneler", "D) Şecereler", "E) Halılar"], "cevap": "B) Fotoğraflar", "aciklama": "Fotoğraf görseldir. Tablet yazılı, efsane sözlüdür."}, {"soru": "Tarih araştırmalarında elde edilen verilerin 'yer, zaman ve konu' bakımından bölümlere ayrılması işlemine ne ad verilir?", "secenekler": ["A) Tarama", "B) Tenkit", "C) Terkip", "D) Tasnif", "E) Tahlil"], "cevap": "D) Tasnif", "aciklama": "Tasnif sınıflandırma demektir."}, {"soru": "Günümüzde kullandığımız Miladi Takvim'in başlangıcı (0 yılı) olarak hangi olay kabul edilir?", "secenekler": ["A) Hicret", "B) Hz. İsa'nın doğumu", "C) Yazının icadı", "D) İstanbul'un Fethi", "E) Fransız İhtilali"], "cevap": "B) Hz. İsa'nın doğumu", "aciklama": "Miladi takvim Hz. İsa'nın doğumunu esas alır."}, {"soru": "Dijitalleşme ile birlikte tarihçilerin en çok kullandığı 'arama' yöntemi aşağıdakilerden hangisine dönüşmüştür?", "secenekler": ["A) Kütüphane fişlerini tek tek elle tarama", "B) Sadece sözlü görüşmeler yapma", "C) Anahtar kelimelerle dijital veritabanlarında sorgulama yapma", "D) Kazı yapma", "E) Müze gezme"], "cevap": "C) Anahtar kelimelerle dijital veritabanlarında sorgulama yapma", "aciklama": "Artık anahtar kelimelerle (keywords) arama yapılmaktadır."}, {"soru": "'Tarih tekerrürden ibarettir' sözü ne anlama gelmektedir?", "secenekler": ["A) Tarihi olayların aynen tekrarlandığı", "B) Tarihte benzer sebeplerin benzer sonuçlar doğurabileceği", "C) Tarihçilerin hep aynı şeyleri yazdığı", "D) Tarihin bir bilim olmadığı", "E) Geçmişin unutulması gerektiği"], "cevap": "B) Tarihte benzer sebeplerin benzer sonuçlar doğurabileceği", "aciklama": "Benzer hatalar benzer sonuçları doğurur."}, {"soru": "Aşağıdakilerden hangisi 'Tarihi Olay' (Vaka) ile 'Tarihi Olgu' (Vakıa) arasındaki farkı en iyi açıklar?", "secenekler": ["A) Olay uzun sürelidir, olgu kısa sürelidir.", "B) Olay somut ve başlangıcı-bitişi bellidir, olgu ise bu olayların sonucunda oluşan uzun süreli genel süreçtir.", "C) Olaylar tekrarlanabilir, olgular tekrarlanamaz.", "D) Olayları tarihçiler yazar, olguları sosyologlar yazar.", "E) Malazgirt Savaşı bir olgudur, Anadolu'nun Türkleşmesi bir olaydır."], "cevap": "B) Olay somut ve başlangıcı-bitişi bellidir, olgu ise bu olayların sonucunda oluşan uzun süreli genel süreçtir.", "aciklama": "Olay anlık, olgu süreçtir."}, {"soru": "Tarihçi, eserini yazarken dipnot kullanmaya ve kaynakça belirtmeye büyük özen göstermektedir. Bu durum tarihçinin hangi özelliğini kanıtlar?", "secenekler": ["A) Edebi yeteneğini", "B) Bilimsel ahlaka ve dürüstlüğe (etik) uygun çalıştığını", "C) Çok fazla kitap okuduğunu", "D) Yabancı dil bildiğini", "E) Konuyu çok iyi bildiğini"], "cevap": "B) Bilimsel ahlaka ve dürüstlüğe (etik) uygun çalıştığını", "aciklama": "Referans vermek bilimsel dürüstlüktür."}, {"soru": "Türkler İslamiyet'i kabul ettikten sonra, dini ibadetlerin zamanını belirleyebilmek (Hac, Oruç vb.) amacıyla hangi takvimi kullanmaya başlamışlardır?", "secenekler": ["A) 12 Hayvanlı Türk Takvimi", "B) Miladi Takvim", "C) Rumi Takvim", "D) Hicri Takvim", "E) Celali Takvim"], "cevap": "D) Hicri Takvim", "aciklama": "Dini ibadetler Hicri takvime göre yapılır."}, {"soru": "Tarihi bir belgenin okunabilmesi için eski yazıların ve alfabelerin bilinmesi gerekir. Bu konuda tarihçiye yardımcı olan bilim dalı hangisidir?", "secenekler": ["A) Paleografya", "B) Nümizmatik", "C) Antropoloji", "D) Heraldik", "E) Kimya"], "cevap": "A) Paleografya", "aciklama": "Paleografya eski yazı bilimidir."}, {"soru": "Osmanlı Devleti'nde mali (ekonomik) işlerin düzenlenmesi amacıyla, Güneş yılı esas alınarak hazırlanan takvim hangisidir?", "secenekler": ["A) Hicri Takvim", "B) Rumi Takvim", "C) Celali Takvim", "D) 12 Hayvanlı Türk Takvimi", "E) Miladi Takvim"], "cevap": "B) Rumi Takvim", "aciklama": "Osmanlı'da mali işler için Rumi Takvim kullanılmıştır."}, {"soru": "5T kuralına göre 'Tahlil' aşamasında elde edilen veriler yeterli bulunmazsa ne yapılmalıdır?", "secenekler": ["A) Terkip aşamasına geçilmelidir.", "B) Eldeki verilerle yetinilmelidir.", "C) Tarama (Kaynak arama) aşamasına geri dönülmelidir.", "D) Konu değiştirilmelidir.", "E) Tenkit yapılmadan eser yazılmalıdır."], "cevap": "C) Tarama (Kaynak arama) aşamasına geri dönülmelidir.", "aciklama": "Veri eksikse başa dönüp kaynak aranır."}, {"soru": "Tarih öğrenimi, bireylerde 'Empati' yeteneğini geliştirir. Bu yetenek bireye günlük hayatta nasıl bir katkı sağlar?", "secenekler": ["A) Olayları sadece kendi penceresinden görmesini sağlar.", "B) Farklı kültürlere ve insanlara karşı önyargısız ve hoşgörülü yaklaşmasını sağlar.", "C) Geçmişte yaşamak istemesine neden olur.", "D) Sadece kendi milletini sevmesini sağlar.", "E) Ekonomik kazanç sağlar."], "cevap": "B) Farklı kültürlere ve insanlara karşı önyargısız ve hoşgörülü yaklaşmasını sağlar.", "aciklama": "Empati hoşgörüyü artırır."}, {"soru": "Dijital tarihçilikte 'Born-digital' (Doğuştan dijital) olmayan, sonradan dijitalleştirilmiş kaynaklara ne ad verilir?", "secenekler": ["A) Birinci el kaynak", "B) Dijitalleştirilmiş (Digitized) kaynak", "C) Sözlü kaynak", "D) Yapay zeka", "E) Büyük veri"], "cevap": "B) Dijitalleştirilmiş (Digitized) kaynak", "aciklama": "Sonradan tarananlar 'dijitalleştirilmiş' kaynaktır."}, {"soru": "Müzelerde bulunan eski paralar, mühürler ve armalar tarihçiye hangi açıdan bilgi VERMEZ?", "secenekler": ["A) Dönemin ekonomik durumu", "B) Hükümdarın saltanat sembolleri", "C) Devletin sanatsal anlayışı", "D) Olayın geçtiği günün hava durumu", "E) Kullanılan yazı ve alfabe"], "cevap": "D) Olayın geçtiği günün hava durumu", "aciklama": "Paralar iklim hakkında bilgi vermez."}, {"soru": "Tarih araştırmalarında 'Terkip' (Sentez) aşaması neden bir yapbozun parçalarını birleştirmeye benzetilir?", "secenekler": ["A) Parçalar her zaman eksik olduğu için", "B) Farklı kaynaklardan doğrulanan bilgilerin anlamlı bir bütün haline getirildiği aşama olduğu için", "C) Çok eğlenceli olduğu için", "D) Rastgele yapıldığı için", "E) Hata kabul etmediği için"], "cevap": "B) Farklı kaynaklardan doğrulanan bilgilerin anlamlı bir bütün haline getirildiği aşama olduğu için", "aciklama": "Bilgiler birleştirilerek anlamlı bir bütün oluşturulur."}, {"soru": "Karbon-14 metodu, tarihçilere hangi konuda kesin kanıtlar sunar?", "secenekler": ["A) Bir metnin yazarının kim olduğu", "B) Tarihi bir savaşın nedenleri", "C) Organik buluntuların (kemik, ahşap vb.) yaşı", "D) Bir toplumun dini inançları", "E) Kültürel etkileşimler"], "cevap": "C) Organik buluntuların (kemik, ahşap vb.) yaşı", "aciklama": "C-14 yaş tayininde kullanılır."}, {"soru": "Dijitalleşmenin tarih araştırmalarına getirdiği 'Erişilebilirlik' kolaylığı, beraberinde hangi zorluğu getirmiştir?", "secenekler": ["A) Kaynak bulamama", "B) Bilgi kirliliği ve güvenilirlik sorunu", "C) Kütüphanelerin kapanması", "D) Tarihçilerin sayısının azalması", "E) Kitap okumanın yasaklanması"], "cevap": "B) Bilgi kirliliği ve güvenilirlik sorunu", "aciklama": "Her bilgi doğru değildir, kirlilik artmıştır."}, {"soru": "Bir tarihçi Orta Asya Türk tarihini araştırırken Çin kaynaklarına da bakmak zorundadır. Bunun temel nedeni nedir?", "secenekler": ["A) Çin kaynaklarının daha süslü olması", "B) Türklerin o dönemde yazılı hayata geçmemiş olması ve yerleşik Çinlilerin Türkler hakkında kayıt tutması", "C) Çince öğrenmek istemesi", "D) Türk kaynaklarının yasaklanmış olması", "E) Çinlilerin Türkleri çok sevmesi"], "cevap": "B) Türklerin o dönemde yazılı hayata geçmemiş olması ve yerleşik Çinlilerin Türkler hakkında kayıt tutması", "aciklama": "Türkler göçebe olduğu için az yazılı belge bırakmıştır."}, {"soru": "Aşağıdakilerden hangisi 'İkinci El Kaynak' örneğidir?", "secenekler": ["A) Halil İnalcık'ın yazdığı tarih kitabı", "B) İstiklal Savaşı'nda kullanılan bir tüfek", "C) Lidyalılara ait bir para", "D) Kadeş Antlaşması tableti", "E) Orhun Abideleri"], "cevap": "A) Halil İnalcık'ın yazdığı tarih kitabı", "aciklama": "Tarih kitapları, belgeler incelenerek yazıldığı için ikinci eldir."}, {"soru": "Tarih biliminde 'Genelleme Yapılamaz' ilkesi neyi ifade eder?", "secenekler": ["A) Tarihi olayların hepsi birbirinin aynısıdır.", "B) Bir olaydaki kural, başka bir olaya aynen uygulanamaz; her olay kendine has koşullar taşır.", "C) Bütün savaşların sonucu aynıdır.", "D) Tarihçiler genel konuşmayı sever.", "E) Tarih fen bilimleri gibidir, formülleri vardır."], "cevap": "B) Bir olaydaki kural, başka bir olaya aynen uygulanamaz; her olay kendine has koşullar taşır.", "aciklama": "Tarihte her olay özgündür, formülize edilemez."}, {"soru": "Tarihsel bilginin 'mutlak doğru' (değişmez) olmamasının temel sebebi nedir?", "secenekler": ["A) Tarihçilerin sürekli yalan söylemesi", "B) Tarihsel belgelerin eksik kalabilmesi ve yeni bulunan belgelerin mevcut bilgiyi değiştirme potansiyeli", "C) Geçmişin önemsiz olması", "D) Devletlerin tarihi sürekli değiştirmesi", "E) Tarihin bilim olmaması"], "cevap": "B) Tarihsel belgelerin eksik kalabilmesi ve yeni bulunan belgelerin mevcut bilgiyi değiştirme potansiyeli", "aciklama": "Yeni bulunan belge eski bilgiyi değiştirebilir."}, {"soru": "Dijital tarihçilikte kullanılan 'Veri Madenciliği' (Data Mining) yöntemi tarihçiye ne sağlar?", "secenekler": ["A) Toprağı kazıp tarihi eser bulmayı", "B) Büyük veri yığınları içindeki gizli örüntüleri, ilişkileri ve eğilimleri bilgisayar algoritmalarıyla ortaya çıkarmayı", "C) Sadece resimleri taramayı", "D) Bilgisayar oyunları tasarlamayı", "E) Eski bilgisayarları tamir etmeyi"], "cevap": "B) Büyük veri yığınları içindeki gizli örüntüleri, ilişkileri ve eğilimleri bilgisayar algoritmalarıyla ortaya çıkarmayı", "aciklama": "Veri madenciliği büyük verideki gizli örüntüleri bulur."}, {"soru": "'Tarih yazmak, tarih yapmak kadar mühimdir...' sözüyle Atatürk hangi ilkeye vurgu yapmıştır?", "secenekler": ["A) Öznellik", "B) Objektiflik (Nesnellik)", "C) Anakronizm", "D) Edebi üslup", "E) Kronolojik sıralama"], "cevap": "B) Objektiflik (Nesnellik)", "aciklama": "Olayı olduğu gibi aktarmak objektifliktir."}, {"soru": "Tarih araştırmalarında 'Nedensellik' (Determinizm) ilkesi incelenirken dikkat edilmesi gereken en önemli nokta nedir?", "secenekler": ["A) Her olayın sadece tek bir nedeni olduğunu savunmak", "B) Olayların tek bir nedene indirgenemeyeceğini, çok boyutlu (siyasi, ekonomik, sosyal) nedenler zinciri olduğunu görmek", "C) Nedenlerin sonuçlardan daha önemsiz olduğunu düşünmek", "D) Sadece kahramanların kararlarına odaklanmak", "E) Olayları tesadüflere bağlamak"], "cevap": "B) Olayların tek bir nedene indirgenemeyeceğini, çok boyutlu (siyasi, ekonomik, sosyal) nedenler zinciri olduğunu görmek", "aciklama": "Olayların çok boyutlu nedenleri vardır."}, {"soru": "Sözlü tarihin en büyük 'handikapı' (dezavantajı) nedir?", "secenekler": ["A) Kaynak kişiye ulaşmanın zor olması", "B) İnsan hafızasının yanıltıcı olabilmesi ve anlatıcının olayları kendi açısından (sübjektif) hatırlaması", "C) Ses kayıt cihazlarının pahalı olması", "D) Sözlü tarihin çok zaman alması", "E) Kimsenin konuşmak istememesi"], "cevap": "B) İnsan hafızasının yanıltıcı olabilmesi ve anlatıcının olayları kendi açısından (sübjektif) hatırlaması", "aciklama": "Hafıza yanıltıcı olabilir, teyit gerektirir."}],
+        test3: [{"soru": "Tarih biliminin yöntemi, diğer pozitif bilimlerden (Fizik, Kimya vb.) hangi yönüyle temelden ayrılır?", "secenekler": ["A) Gözlem yapmasıyla", "B) Deney yapılamamasıyla", "C) Rapor tutmasıyla", "D) Araştırma yapmasıyla", "E) Sonuç çıkarmasıyla"], "cevap": "B) Deney yapılamamasıyla", "aciklama": "Tarihte deney yapılamaz."}, {"soru": "'Olay' (Vaka) ve 'Olgu' (Vakıa) kavramları düşünüldüğünde, aşağıdakilerden hangisi bir 'Tarihi Olay' örneğidir?", "secenekler": ["A) Anadolu'nun Türkleşmesi", "B) Türkiye'nin çağdaşlaşması", "C) İstanbul'un Fethi (1453)", "D) İslamiyet'in yayılması", "E) Milliyetçilik akımının güçlenmesi"], "cevap": "C) İstanbul'un Fethi (1453)", "aciklama": "İstanbul'un Fethi somut bir olaydır."}, {"soru": "Tarih araştırmalarında 'birinci elden kaynak' (ana kaynak) aşağıdakilerden hangisidir?", "secenekler": ["A) Olayın geçtiği döneme ait her türlü bulgu ve belge", "B) Ders kitapları", "C) Ansiklopediler", "D) Tarihi romanlar", "E) Öğretmen notları"], "cevap": "A) Olayın geçtiği döneme ait her türlü bulgu ve belge", "aciklama": "O döneme ait her şey birinci eldir."}, {"soru": "Türklerin kullandığı takvimlerden hangisi 'Güneş Yılı' esasına dayanmaz?", "secenekler": ["A) 12 Hayvanlı Türk Takvimi", "B) Celali Takvim", "C) Rumi Takvim", "D) Hicri Takvim", "E) Miladi Takvim"], "cevap": "D) Hicri Takvim", "aciklama": "Hicri takvim Ay yılı esaslıdır."}, {"soru": "Tarihi olayların doğru değerlendirilebilmesi için olayın geçtiği 'yer' ve 'zaman'ın bilinmesi neden zorunludur?", "secenekler": ["A) Ezber yapmayı kolaylaştırmak için", "B) Olayın neden-sonuç ilişkisini kurabilmek ve o günün şartlarına göre değerlendirebilmek için", "C) Kitapları kalınlaştırmak için", "D) Sadece savaşları incelemek için", "E) Harita çizebilmek için"], "cevap": "B) Olayın neden-sonuç ilişkisini kurabilmek ve o günün şartlarına göre değerlendirebilmek için", "aciklama": "Yer ve zaman, olayın bağlamını kurmayı sağlar."}, {"soru": "Aşağıdakilerden hangisi 'Tarih Yazıcılığı' türlerinden biri olan 'Hikayeci Tarih'in en bilinen temsilcisidir?", "secenekler": ["A) Heredot", "B) Halil İnalcık", "C) Thukydides", "D) İlber Ortaylı", "E) Voltaire"], "cevap": "A) Heredot", "aciklama": "Heredot hikayeci tarihin babasıdır."}, {"soru": "Eski paraları inceleyerek tarihe yardımcı olan bilim dalı hangisidir?", "secenekler": ["A) Coğrafya", "B) Nümizmatik", "C) Kimya", "D) Biyoloji", "E) Sosyoloji"], "cevap": "B) Nümizmatik", "aciklama": "Nümizmatik para bilimidir."}, {"soru": "Tarih araştırmasının 5T basamağından ilki olan 'Tarama' ne anlama gelir?", "secenekler": ["A) Kaynakların okunması", "B) Kaynakların sınıflandırılması", "C) Kaynak arama ve toplama", "D) Kaynakların eleştirilmesi", "E) Eserin yazılması"], "cevap": "C) Kaynak arama ve toplama", "aciklama": "Tarama kaynak toplama işidir."}, {"soru": "Aşağıdaki takvimlerden hangisi Türklerin İslamiyet'i kabulünden ÖNCE kullandığı takvimdir?", "secenekler": ["A) Hicri Takvim", "B) Rumi Takvim", "C) Celali Takvim", "D) 12 Hayvanlı Türk Takvimi", "E) Miladi Takvim"], "cevap": "D) 12 Hayvanlı Türk Takvimi", "aciklama": "İslamiyet öncesi 12 Hayvanlı Türk Takvimi kullanılmıştır."}, {"soru": "Dijital kütüphanelerin araştırmacılara sağladığı 'mekandan bağımsızlık' ne demektir?", "secenekler": ["A) Kütüphanelerin kapanması", "B) Araştırmacının evinden veya ofisinden dünyanın herhangi bir yerindeki arşive ulaşabilmesi", "C) Sadece uzayla ilgili araştırma yapılması", "D) Tarihçilerin seyahat etmesinin yasaklanması", "E) Binaların yıkılması"], "cevap": "B) Araştırmacının evinden veya ofisinden dünyanın herhangi bir yerindeki arşive ulaşabilmesi", "aciklama": "İnternet sayesinde her yerden erişim mümkündür."}, {"soru": "Fatih Sultan Mehmet dönemini araştıran bir tarihçinin, o döneme ait 'altın paraları' ve 'fermanları' incelemesi, aşağıdaki kaynak türlerinden hangilerine başvurduğunu gösterir?", "secenekler": ["A) Sadece Sözlü Kaynaklar", "B) Yazılı Kaynaklar ve Kalıntı/Nesne Kaynaklar", "C) Sadece Görsel Kaynaklar", "D) İkinci El Kaynaklar", "E) Dijital Kaynaklar"], "cevap": "B) Yazılı Kaynaklar ve Kalıntı/Nesne Kaynaklar", "aciklama": "Ferman yazılı, para nesne kaynaktır."}, {"soru": "Tarih biliminde 'Neden-Sonuç' ilişkisi neden bu kadar önemlidir?", "secenekler": ["A) Olayları ezberlemeyi kolaylaştırdığı için", "B) Tarihi bir masal olmaktan çıkarıp, olaylar arasındaki sürekliliği ve mantıksal bağı kurduğu için", "C) Tarihçilerin işini zorlaştırdığı için", "D) Sınav soruları hazırlamak için", "E) Geleceği kesin olarak bilmek için"], "cevap": "B) Tarihi bir masal olmaktan çıkarıp, olaylar arasındaki sürekliliği ve mantıksal bağı kurduğu için", "aciklama": "Nedensellik olaylar arası bağı kurar."}, {"soru": "Celali Takvim ve Rumi Takvim'in ortak özelliği aşağıdakilerden hangisidir?", "secenekler": ["A) İkisinin de Ay yılı esaslı olması", "B) İkisinin de sadece Türkler tarafından kullanılması", "C) İkisinin de mali (ekonomik) işleri düzenlemek amacıyla hazırlanmış Güneş yılı esaslı takvimler olması", "D) Başlangıçlarının Hz. İsa'nın doğumu olması", "E) Günümüzde hala resmi takvim olarak kullanılmaları"], "cevap": "C) İkisinin de mali (ekonomik) işleri düzenlemek amacıyla hazırlanmış Güneş yılı esaslı takvimler olması", "aciklama": "İkisi de mali işler için Güneş yılı esaslıdır."}, {"soru": "Tarih öncesi çağları (Taş Devri, Maden Devri) araştıran bir tarihçi, aşağıdaki yardımcı bilimlerden hangisinden YARARLANAMAZ?", "secenekler": ["A) Arkeoloji (Kazı Bilimi)", "B) Paleografya (Yazı Bilimi)", "C) Kimya (Karbon-14)", "D) Antropoloji (Irk Bilimi)", "E) Coğrafya"], "cevap": "B) Paleografya (Yazı Bilimi)", "aciklama": "Tarih öncesinde yazı yoktur."}, {"soru": "Dijital tarihçilikte 'veri güvenliği' neden önemli bir sorundur?", "secenekler": ["A) Bilgisayarların pahalı olması", "B) Dijital verilerin siber saldırılarla değiştirilebilir, silinebilir veya manipüle edilebilir olması", "C) Tarihçilerin şifrelerini unutması", "D) İnternetin yavaş olması", "E) Kağıt kullanımının artması"], "cevap": "B) Dijital verilerin siber saldırılarla değiştirilebilir, silinebilir veya manipüle edilebilir olması", "aciklama": "Dijital veri manipüle edilebilir."}, {"soru": "Bir tarih araştırmasında kaynakların 'güvenilirliğinin' sorgulandığı, yazarın taraflı olup olmadığının incelendiği aşama hangisidir?", "secenekler": ["A) Tarama", "B) Tasnif", "C) Tahlil", "D) Tenkit (Eleştiri)", "E) Terkip (Sentez)"], "cevap": "D) Tenkit (Eleştiri)", "aciklama": "Güvenilirlik sorgusu Tenkit aşamasıdır."}, {"soru": "'Öğretici Tarih' (Pragmatik Tarih) anlayışının temel amacı nedir?", "secenekler": ["A) Sadece gerçekleri anlatmak", "B) Topluma ahlaki dersler vermek, milli duyguları güçlendirmek ve kahramanlıkları öne çıkarmak", "C) Olayları neden-sonuç ilişkisi içinde incelemek", "D) Efsaneleri tamamen reddetmek", "E) Kronolojik sıralama yapmak"], "cevap": "B) Topluma ahlaki dersler vermek, milli duyguları güçlendirmek ve kahramanlıkları öne çıkarmak", "aciklama": "Öğretici tarih fayda ve ders odaklıdır."}, {"soru": "Mısır hiyerogliflerini veya Göktürk kitabelerini okumak isteyen bir tarihçi, öncelikle hangi alanda uzmanlaşmalıdır?", "secenekler": ["A) Paleografya ve Epigrafya", "B) Nümizmatik ve Kimya", "C) Coğrafya ve Arkeoloji", "D) Heraldik ve Sigillografya", "E) Etnografya ve İstatistik"], "cevap": "A) Paleografya ve Epigrafya", "aciklama": "Yazı ve kitabe bilimi gereklidir."}, {"soru": "Aşağıdakilerden hangisi dijitalleşmenin tarih araştırmalarına sağladığı 'demokratikleşme' etkisine örnektir?", "secenekler": ["A) Sadece profesörlerin arşivlere girebilmesi", "B) Sıradan insanların da kendi aile arşivlerini, fotoğraflarını dijital platformlarda paylaşarak tarih yazımına veri sunabilmesi", "C) Devletin tüm belgeleri gizlemesi", "D) Tarih kitaplarının sadece üniversitelerde satılması", "E) İnternetin ücretli olması"], "cevap": "B) Sıradan insanların da kendi aile arşivlerini, fotoğraflarını dijital platformlarda paylaşarak tarih yazımına veri sunabilmesi", "aciklama": "Herkesin tarih yazımına katkısı demokratikleşmedir."}, {"soru": "'Kronoloji bilimi olmadan tarih kördür.' sözü neyi ifade eder?", "secenekler": ["A) Tarihçilerin gözlük takması gerektiğini", "B) Olayların oluş sırası bilinmezse, neden-sonuç ilişkisinin kurulamayacağını ve olayın anlaşılamayacağını", "C) Tarihin bir sanat dalı olduğunu", "D) Zamanın önemsiz olduğunu", "E) Coğrafyanın daha önemli olduğunu"], "cevap": "B) Olayların oluş sırası bilinmezse, neden-sonuç ilişkisinin kurulamayacağını ve olayın anlaşılamayacağını", "aciklama": "Sıralama (kronoloji) olmadan neden-sonuç kurulamaz."}, {"soru": "Tarih araştırmalarında yapılan 'Anakronizm' (Tarih Yanılgısı) hatasına aşağıdakilerden hangisi örnektir?", "secenekler": ["A) Fatih Sultan Mehmet'in portresini İtalyan ressama yaptırması", "B) Osmanlı Devleti'nde telefon hatlarının kurulduğunun iddia edilmesi (16. yüzyıl için)", "C) Sümerlerin Ziggurat yapması", "D) Mısırlıların Güneş takvimini bulması", "E) Türklerin atı evcilleştirmesi"], "cevap": "B) Osmanlı Devleti'nde telefon hatlarının kurulduğunun iddia edilmesi (16. yüzyıl için)", "aciklama": "16. yüzyılda telefon yoktur, bu anakronizmdir."}, {"soru": "Dijital Tarihçilikte, 'Born-digital' (Doğuştan dijital) kaynaklar ile 'Digitized' (Dijitalleştirilmiş) kaynaklar arasındaki temel fark nedir?", "secenekler": ["A) Born-digital kaynakların kağıt formatının hiç olmaması, doğrudan dijital ortamda üretilmesi; diğerinin ise sonradan taranmasıdır.", "B) Born-digital kaynakların daha eski olmasıdır.", "C) Digitized kaynakların güvenilmez olmasıdır.", "D) Aralarında bir fark yoktur.", "E) Born-digital kaynakların sadece resim olmasıdır."], "cevap": "A) Born-digital kaynakların kağıt formatının hiç olmaması, doğrudan dijital ortamda üretilmesi; diğerinin ise sonradan taranmasıdır.", "aciklama": "Fark orijinalin kağıt olup olmamasıdır."}, {"soru": "Tarihsel bilginin üretim sürecinde 'Terkip' (Sentez) aşaması neden en yaratıcı aşama olarak kabul edilir?", "secenekler": ["A) Çünkü tarihçi burada hayal gücünü kullanarak olayları uydurur.", "B) Çünkü tarihçi, topladığı ve doğruladığı dağınık bilgileri kendi bakış açısı ve yorumuyla birleştirerek yeni bir eser ortaya koyar.", "C) Çünkü bu aşamada kaynak kullanılmaz.", "D) Çünkü en kısa süren aşamadır.", "E) Çünkü sadece resimler birleştirilir."], "cevap": "B) Çünkü tarihçi, topladığı ve doğruladığı dağınık bilgileri kendi bakış açısı ve yorumuyla birleştirerek yeni bir eser ortaya koyar.", "aciklama": "Sentez, tarihçinin yorumunu kattığı inşadır."}, {"soru": "Halil İnalcık'ın 'Belgesiz tarih olmaz' ilkesi neyi zorunlu kılar?", "secenekler": ["A) Olayların sadece kulaktan dolma bilgilerle yazılmasını", "B) Tarihçinin arşivlerde çalışarak birincil kaynaklara (ana kaynak) ulaşmasını", "C) Tarihin sadece siyasi olayları incelemesini", "D) Yabancı kaynakların reddedilmesini", "E) Ders kitaplarının tek kaynak olmasını"], "cevap": "B) Tarihçinin arşivlerde çalışarak birincil kaynaklara (ana kaynak) ulaşmasını", "aciklama": "Belge, bilimsel tarihin temelidir."}, {"soru": "Karbon-14 metodu neden her buluntuda kullanılamaz?", "secenekler": ["A) Sadece metal eşyalarda kullanılabilmesi", "B) Sadece organik (bir zamanlar canlı olan: kemik, ahşap, kumaş) maddelerde kullanılabilmesi", "C) Sadece su altı buluntularında çalışması", "D) Çok ucuz olması", "E) 100 yıllık eşyaları ölçememesi"], "cevap": "B) Sadece organik (bir zamanlar canlı olan: kemik, ahşap, kumaş) maddelerde kullanılabilmesi", "aciklama": "C-14 sadece organik maddelerde çalışır."}, {"soru": "Bir tarihçinin 'Sigillografya' ve 'Heraldik' bilimlerinden yararlanması neyi aydınlatır?", "secenekler": ["A) Halkın günlük yeme içme alışkanlıklarını", "B) Devletlerin resmi yazışma kurallarını, hükümdarlık sembollerini ve soyluluk ünvanlarını", "C) Coğrafi iklim şartlarını", "D) O dönemin müzik anlayışını", "E) Tarım aletlerinin yapısını"], "cevap": "B) Devletlerin resmi yazışma kurallarını, hükümdarlık sembollerini ve soyluluk ünvanlarını", "aciklama": "Mühür ve arma devlet sembolleridir."}, {"soru": "'Tarihsel Empati' yaparken düşülen tuzağa düşmeyen bakış açısı hangisidir?", "secenekler": ["A) 'Kardeş katli yasası çok vahşice, Osmanlı yöneticileri katilmiş.' demek.", "B) 'O dönemde devletin parçalanmasını önlemek (Nizam-ı Alem) için, dönemin şartlarında bu uygulama zorunlu görülmüştür.' demek.", "C) 'Eski insanlar insan haklarını hiç bilmiyormuş.' diye yargılamak.", "D) 'Geçmişte yaşayanlar bizden daha zekiydi.' demek.", "E) Olayları görmezden gelmek."], "cevap": "B) 'O dönemde devletin parçalanmasını önlemek (Nizam-ı Alem) için, dönemin şartlarında bu uygulama zorunlu görülmüştür.' demek.", "aciklama": "Olayı kendi döneminin şartlarıyla değerlendirmek empatidir."}, {"soru": "Dijital beşeri bilimler kapsamında kullanılan 'Veri Madenciliği', tarihçiye neyi gösterir?", "secenekler": ["A) Tek bir belgenin içeriğini", "B) Binlerce belge arasındaki gizli örüntüleri (pattern), örneğin yüzyıllar içindeki kelime kullanım sıklığının değişimini veya ticaret rotalarındaki yoğunluğu", "C) Belgelerin hangi kağıda yazıldığını", "D) Yazarın el yazısının güzelliğini", "E) Kitabın kapak rengini"], "cevap": "B) Binlerce belge arasındaki gizli örüntüleri (pattern), örneğin yüzyıllar içindeki kelime kullanım sıklığının değişimini veya ticaret rotalarındaki yoğunluğu", "aciklama": "Makro analiz ve örüntü keşfi sağlar."}, {"soru": "'Tarih, tarihçinin zihninde yeniden inşa edilir' görüşü neyi savunur?", "secenekler": ["A) Geçmişin olduğu gibi, %100 objektif şekilde aktarılabileceğini", "B) Tarihin tamamen kurgusal bir roman olduğunu", "C) Geçmişin kendisi ile tarih kitabı arasındaki farkı; tarihçinin seçiciliğinin ve yorumunun kaçınılmaz olduğunu", "D) Tarihçilerin hafızasının çok güçlü olduğunu", "E) Tarihin bilim olmadığını"], "cevap": "C) Geçmişin kendisi ile tarih kitabı arasındaki farkı; tarihçinin seçiciliğinin ve yorumunun kaçınılmaz olduğunu", "aciklama": "Tarih, tarihçinin kurgusudur."}, {"soru": "Aşağıdaki yardımcı bilim eşleştirmelerinden hangisi YANLIŞTIR?", "secenekler": ["A) Epigrafya - Kitabeler üzerindeki yazılar", "B) Antropoloji - İnsan ırklarının fiziksel özellikleri ve kültürleri", "C) Filoloji - Dillerin yapısı ve gelişimi", "D) Etnografya - Toplumların örf, adet ve kültürel eşyaları", "E) Paleografya - Eski paraların ekonomik değeri"], "cevap": "E) Paleografya - Eski paraların ekonomik değeri", "aciklama": "Paleografya yazı bilimidir, para bilimi Nümizmatiktir."}]
     };
 
-    // --- UYGULAMA DEĞİŞKENLERİ ---
-    let ogrenciBilgileri = {};
-    let aktifTest = null;
+    // --- KLASİK SINAV SORULARI VE CEVAP ANAHTARI ---
+    const klasikSorular = [
+        {
+            soru: "1. Tarih biliminin tanımını yaparak, tarih biliminin konusunu kısaca açıklayınız.",
+            cevap: "Tarih; geçmişteki insan topluluklarının yaşayışlarını, kültürlerini, birbirleriyle olan ilişkilerini yer ve zaman göstererek, neden-sonuç ilişkisi içinde belgelere dayanarak objektif biçimde inceleyen sosyal bir bilimdir. Konusu insan faaliyetleridir."
+        },
+        {
+            soru: "2. 'Tarih tekerrürden ibarettir' sözünü tarih metodolojisi açısından yorumlayınız.",
+            cevap: "Tarihte olaylar birebir tekrar etmez (zaman ve aktörler değişir), ancak benzer sebepler benzer sonuçlar doğurur. Bu söz, tarihten ders çıkarılması gerektiğini vurgular."
+        },
+        {
+            soru: "3. Birinci elden kaynak ve ikinci elden kaynak arasındaki fark nedir? Örnek veriniz.",
+            cevap: "Birinci el: Olayın geçtiği döneme ait ana kaynaktır (Örn: Ferman, Para). İkinci el: Olaydan sonra ana kaynaklardan yararlanılarak oluşturulan eserdir (Örn: Ders Kitabı)."
+        }
+    ];
 
-    // --- FONKSİYONLAR ---
+    // --- DEĞİŞKENLER ---
+    let ogrenci = {};
+    let aktifTest = null;
+    let suankiSorular = []; // Karıştırılmış sorular
+    let timerInterval;
+    let baslangicZamani;
+    let cevaplar = {}; // Öğrenci cevapları
+    let flagged = {}; // İşaretli sorular
+    
+    // --- YENİ EKLENEN: İhlal Sayacı ---
+    let ihlalSayisi = 0; 
+
+    // --- 4. GİRİŞ VE MENÜ ---
     function girisYap() {
-        const ad = document.getElementById("adSoyad").value;
+        const ad = document.getElementById("adSoyad").value.trim();
         const sinif = document.getElementById("sinif").value;
-        const no = document.getElementById("numara").value;
+        const no = document.getElementById("numara").value.trim();
         const girilenSifre = document.getElementById("sifre").value;
 
-        if (ad === "" || sinif === "" || no === "" || girilenSifre === "") {
-            alert("Lütfen tüm alanları doldurunuz.");
-            return;
-        }
+        if (!ad || !sinif || !no || !girilenSifre) { alert("Lütfen tüm alanları doldurunuz."); return; }
+        if (girilenSifre !== DOGRU_SIFRE) { alert("Hatalı şifre!"); return; }
 
-        if (girilenSifre !== DOGRU_SIFRE) {
-            alert("Hatalı şifre!");
-            return;
-        }
+        ogrenci = { ad, sinif, no };
+        
+        // Watermark oluştur
+        watermarkOlustur(ad + " " + no);
 
-        ogrenciBilgileri = { isim: ad, sinif: sinif, numara: no };
         document.getElementById("girisEkrani").classList.add("hidden");
         document.getElementById("menuEkrani").classList.remove("hidden");
         document.getElementById("kullaniciAdiSpan").innerText = ad;
+        
+        // Akordiyonu hazırla
+        renderMateryaller();
     }
 
-    function testSec(testKodu) {
-        document.getElementById("menuEkrani").classList.add("hidden");
-        aktifTest = testKodu;
+    function watermarkOlustur(text) {
+        const container = document.getElementById("watermark");
+        container.innerHTML = "";
+        for (let i = 0; i < 15; i++) {
+            const div = document.createElement("div");
+            div.className = "watermark-text";
+            div.innerText = text;
+            container.appendChild(div);
+        }
+    }
 
-        if(testKodu === 'klasik') {
-            // Klasik Sınav Modu
-            document.getElementById("klasikEkrani").classList.remove("hidden");
-            const alan = document.getElementById("klasikSorularAlani");
-            let html = "";
-            klasikSorular.forEach((soru, index) => {
-                html += `
-                <div class="question-card">
-                    <div class="question-text">${soru}</div>
-                    <textarea id="klasikCevap${index}" placeholder="Cevabınızı buraya yazınız..."></textarea>
+    // --- 5. TEST BAŞLATMA VE RENDER ---
+    function testSec(testKodu) {
+        aktifTest = testKodu;
+        document.getElementById("menuEkrani").classList.add("hidden");
+        document.getElementById("testEkrani").classList.remove("hidden");
+        
+        // --- YENİ EKLENEN: Sayaç Sıfırlama ---
+        ihlalSayisi = 0;
+
+        const isKlasik = (testKodu === 'klasik');
+        
+        // Başlık ve Süre Ayarı
+        let baslik = isKlasik ? "Klasik Sınav (Açık Uçlu)" : 
+                     (testKodu === 'test1' ? "1. Ünite Testi" : 
+                     (testKodu === 'test2' ? "2. Ünite Testi" : "3. Ünite Testi"));
+        document.getElementById("testBaslik").innerText = baslik;
+        
+        const sureDk = isKlasik ? 40 : 30;
+        sayacBaslat(sureDk * 60);
+
+        // Soruları Hazırla
+        const alan = document.getElementById("sorularAlani");
+        alan.innerHTML = "";
+        cevaplar = {};
+        flagged = {};
+
+        if (isKlasik) {
+            renderKlasik(alan);
+        } else {
+            // Test sorularını karıştır
+            suankiSorular = shuffle([...allTests[testKodu]]); 
+            renderTest(alan);
+        }
+    }
+
+    function renderTest(alan) {
+        // Navigasyon haritasını oluştur
+        const map = document.getElementById("navMap");
+        map.innerHTML = "";
+        
+        suankiSorular.forEach((soru, index) => {
+            // Harita Noktası
+            const dot = document.createElement("div");
+            dot.className = "nav-dot";
+            dot.innerText = index + 1;
+            dot.id = `dot-${index}`;
+            dot.onclick = () => document.getElementById(`soru-kart-${index}`).scrollIntoView({behavior: "smooth"});
+            map.appendChild(dot);
+
+            // Soru Kartı
+            const kart = document.createElement("div");
+            kart.className = "question-card";
+            kart.id = `soru-kart-${index}`;
+            
+            let html = `
+            <div class="question-header">
+                <span class="question-number">Soru ${index + 1}</span>
+                <button class="flag-btn" id="flag-${index}" onclick="bayrakKoy(${index})">🚩 Sonra Bak</button>
+            </div>
+            <div style="font-size:17px; margin-bottom:15px; font-weight:600;">${soru.soru}</div>
+            <div class="options">`;
+            
+            soru.secenekler.forEach(secenek => {
+                const val = secenek.replace(/"/g, '&quot;');
+                html += `<label><input type="radio" name="soru${index}" value="${val}" onchange="cevapVerildi(${index})"> ${secenek}</label>`;
+            });
+            html += `</div>`;
+            kart.innerHTML = html;
+            alan.appendChild(kart);
+        });
+    }
+
+    function renderKlasik(alan) {
+        document.getElementById("navMap").innerHTML = ""; 
+        klasikSorular.forEach((item, index) => {
+            const div = document.createElement("div");
+            div.className = "question-card";
+            div.innerHTML = `
+                <div style="font-weight:bold; margin-bottom:10px;">${item.soru}</div>
+                <textarea id="klasikCevap${index}" style="width:100%;" placeholder="Cevabınızı buraya yazınız..."></textarea>
+            `;
+            alan.appendChild(div);
+        });
+    }
+
+    // --- 6. ETKİLEŞİM (HARİTA & BAYRAK) ---
+    function cevapVerildi(index) {
+        document.getElementById(`dot-${index}`).classList.add("answered");
+    }
+
+    function bayrakKoy(index) {
+        const btn = document.getElementById(`flag-${index}`);
+        const dot = document.getElementById(`dot-${index}`);
+        
+        if (flagged[index]) {
+            delete flagged[index];
+            btn.classList.remove("active");
+            dot.classList.remove("flagged");
+            btn.innerText = "🚩 Sonra Bak";
+        } else {
+            flagged[index] = true;
+            btn.classList.add("active");
+            dot.classList.add("flagged");
+            btn.innerText = "🚩 İşaretlendi";
+        }
+    }
+
+    // --- 7. SAYAÇ & UTILS ---
+    function sayacBaslat(saniye) {
+        clearInterval(timerInterval);
+        baslangicZamani = new Date();
+        
+        let kalan = saniye;
+        const display = document.getElementById("sayac");
+        
+        timerInterval = setInterval(() => {
+            let dk = Math.floor(kalan / 60);
+            let sn = kalan % 60;
+            display.innerText = `${dk}:${sn < 10 ? '0' : ''}${sn}`;
+            
+            if (--kalan < 0) {
+                clearInterval(timerInterval);
+                alert("Süre doldu! Sınavınız otomatik olarak gönderiliyor.");
+                testiBitir(true);
+            }
+        }, 1000);
+    }
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // --- 8. TEST BİTİRME & RAPORLAMA ---
+    function testiBitir(otomatik = false) {
+        if (!otomatik && !confirm("Sınavı bitirmek istediğinize emin misiniz?")) return;
+        
+        clearInterval(timerInterval);
+        const bitisZamani = new Date();
+        const gecenSureSn = Math.floor((bitisZamani - baslangicZamani) / 1000);
+        const gecenSureStr = `${Math.floor(gecenSureSn / 60)} dk ${gecenSureSn % 60} sn`;
+
+        let raporMetni = "";
+        let puan = 0;
+        let detayHtml = "";
+
+        if (aktifTest === 'klasik') {
+            raporMetni = "[KLASİK] ";
+            // Klasik Sınav için Detaylı Görüntüleme Başlığı
+            detayHtml = "<h3 style='color:#2c3e50; border-bottom:2px solid #ddd; padding-bottom:10px; margin-top:20px;'>Cevap Anahtarı Karşılaştırması</h3>";
+            
+            klasikSorular.forEach((item, index) => {
+                const cvp = document.getElementById(`klasikCevap${index}`).value.replace(/\n/g, " ");
+                raporMetni += `S${index+1}: ${cvp} || `;
+                
+                // Klasik Sınav Karşılaştırma Kartı
+                detayHtml += `
+                <div class="explanation-card" style="border-left: 5px solid #3498db; background: #f8fbff;">
+                    <div style="font-weight:bold; color:#2c3e50; margin-bottom:5px;">Soru ${index+1}: ${item.soru}</div>
+                    <div style="margin-bottom:10px;">
+                        <span style="color:#e67e22; font-weight:bold;">Sizin Cevabınız:</span><br>
+                        ${cvp || "Boş Bırakıldı"}
+                    </div>
+                    <div style="background:#eafaf1; padding:10px; border-radius:5px; border:1px solid #27ae60;">
+                        <span style="color:#27ae60; font-weight:bold;">Beklenen Cevap (Öğretmen Notu):</span><br>
+                        ${item.cevap}
+                    </div>
                 </div>`;
             });
-            alan.innerHTML = html;
-        } else {
-            // Test Modu
-            document.getElementById("testEkrani").classList.remove("hidden");
-            const secilenSorular = allTests[testKodu];
-            let baslik = "";
-            if(testKodu === 'test1') baslik = "1. Ünite Testi";
-            if(testKodu === 'test2') baslik = "2. Ünite Testi";
-            if(testKodu === 'test3') baslik = "3. Ünite Testi";
-            document.getElementById("testBaslik").innerText = baslik;
-
-            const alan = document.getElementById("sorularAlani");
-            let html = "";
             
-            secilenSorular.forEach((soru, index) => {
-                html += `<div class="question-card">
-                    <div class="question-text">${soru.soru}</div>
-                    <div class="options">`;
+            puan = "DEĞERLENDİRİLECEK";
+            document.getElementById("klasikMesaj").style.display = "block";
+            // Klasik sınav sonuçlarını da ekrana basıyoruz
+            document.getElementById("detayliCozumler").innerHTML = detayHtml;
+            
+        } else {
+            // Test Puanlama (Eski Sistem Aynen Devam Ediyor)
+            let dogruSayisi = 0;
+            raporMetni = `[${aktifTest.toUpperCase()}] `;
+            
+            suankiSorular.forEach((soru, index) => {
+                const secilenEl = document.querySelector(`input[name="soru${index}"]:checked`);
+                const secilen = secilenEl ? secilenEl.value : "BOŞ";
+                const dogruMu = (secilen === soru.cevap);
                 
-                soru.secenekler.forEach(secenek => {
-                    let temizSecenek = secenek.replace(/"/g, '&quot;');
-                    html += `<label><input type="radio" name="soru${index}" value="${temizSecenek}"> ${secenek}</label>`;
-                });
-                html += `</div></div>`;
+                if (dogruMu) {
+                    dogruSayisi++;
+                    detayHtml += `<div class="explanation-card correct"><b>Soru ${index+1}: DOĞRU</b><br>Sizin Cevabınız: ${secilen}<br><i>${soru.aciklama}</i></div>`;
+                } else {
+                    detayHtml += `<div class="explanation-card wrong"><b>Soru ${index+1}: YANLIŞ</b><br>Sizin Cevabınız: ${secilen}<br>Doğru Cevap: ${soru.cevap}<br><i>${soru.aciklama}</i></div>`;
+                    raporMetni += `S${index+1}:Y (${secilen}) | `;
+                }
             });
-            alan.innerHTML = html;
-        }
-    }
-
-    function testiBitir() {
-        if(!confirm("Sınavı bitirmek istediğinize emin misiniz?")) return;
-
-        const sorular = allTests[aktifTest];
-        let dogruSayisi = 0;
-        let raporMetni = `[${aktifTest.toUpperCase()}] `;
-        let detayliHtml = "";
-
-        sorular.forEach((soru, index) => {
-            const secilenElement = document.querySelector(`input[name="soru${index}"]:checked`);
-            const secilen = secilenElement ? secilenElement.value : "BOŞ";
-            const dogruMu = (secilen === soru.cevap);
             
-            if (dogruMu) {
-                dogruSayisi++;
-                detayliHtml += `<div class="explanation-card correct"><b>Soru ${index+1} DOĞRU</b><br>Cevabınız: ${secilen}<br><i>${soru.aciklama}</i></div>`;
-            } else {
-                detayliHtml += `<div class="explanation-card wrong"><b>Soru ${index+1} YANLIŞ</b><br>Sizin Cevabınız: ${secilen}<br>Doğru Cevap: ${soru.cevap}<br><i>${soru.aciklama}</i></div>`;
-                raporMetni += `S${index+1}:Y (${secilen}) | `;
-            }
-        });
-
-        const puan = Math.round((dogruSayisi / sorular.length) * 100);
-        raporMetni += ` Doğru: ${dogruSayisi}/${sorular.length}`;
-
-        sonucGoster(puan, raporMetni, detayliHtml, true);
-    }
-
-    function klasikBitir() {
-        if(!confirm("Klasik sınavı bitirmek istediğinize emin misiniz?")) return;
-        
-        let raporMetni = "[KLASİK SINAV] ";
-        klasikSorular.forEach((soru, index) => {
-            const cevap = document.getElementById(`klasikCevap${index}`).value;
-            raporMetni += `S${index+1} Cevap: ${cevap} || `;
-        });
-
-        // Puan hemen hesaplanamaz
-        sonucGoster("DEĞERLENDİRİLECEK", raporMetni, "", false);
-    }
-
-    function sonucGoster(puan, rapor, detay, testModu) {
-        document.getElementById("testEkrani").classList.add("hidden");
-        document.getElementById("klasikEkrani").classList.add("hidden");
-        document.getElementById("sonucEkrani").classList.remove("hidden");
-
-        if(testModu) {
-            document.getElementById("puanKutusu").classList.remove("hidden");
+            puan = Math.round((dogruSayisi / suankiSorular.length) * 100);
+            raporMetni += ` Doğru: ${dogruSayisi}/${suankiSorular.length}`;
+            
+            document.getElementById("puanKutusu").style.display = "block";
             document.getElementById("puanGostergesi").innerText = puan;
-            document.getElementById("detayliCozumler").innerHTML = detay;
-        } else {
-            document.getElementById("klasikMesaj").classList.remove("hidden");
+            document.getElementById("detayliCozumler").innerHTML = detayHtml;
         }
 
-        // Google Sheet'e Gönder
+        document.getElementById("testEkrani").classList.add("hidden");
+        document.getElementById("sonucEkrani").classList.remove("hidden");
+        document.getElementById("bitirmeSuresi").innerText = gecenSureStr;
+
+        // --- YENİ EKLENEN: Akıllı Mesaj ve İhlal Raporu ---
+        mesajKutusunuGoster(puan);
+        if(ihlalSayisi > 0) {
+            raporMetni += ` [⚠️ SEKME İHLALİ: ${ihlalSayisi} KEZ]`;
+        }
+        // --------------------------------------------------
+
+        // Veriyi Gönder (Süre Bilgisiyle)
         const data = {
-            isim: ogrenciBilgileri.isim,
-            sinif: ogrenciBilgileri.sinif,
-            numara: ogrenciBilgileri.numara,
+            isim: ogrenci.ad,
+            sinif: ogrenci.sinif,
+            numara: ogrenci.no,
             puan: puan,
-            rapor: rapor
+            rapor: `(Süre: ${gecenSureStr}) ` + raporMetni
         };
 
         fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
+            method: 'POST', mode: 'no-cors',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
-        }).catch(err => console.log(err));
+        }).catch(e => console.log(e));
     }
 
-    function menuyeDon() {
-        document.getElementById("testEkrani").classList.add("hidden");
-        document.getElementById("klasikEkrani").classList.add("hidden");
-        document.getElementById("menuEkrani").classList.remove("hidden");
-        aktifTest = null;
+    // --- 9. MATERYAL PANELİ ---
+    function renderMateryaller() {
+        const panel = document.getElementById("materyalPaneli");
+        let html = "";
+        dersMateryalleri.forEach(mat => {
+            html += `<a href="${mat.link}" target="_blank" class="file-link">${mat.baslik}</a>`;
+        });
+        panel.innerHTML = html;
+
+        // Akordiyon Olayı
+        const accBtn = document.querySelector(".accordion-btn");
+        accBtn.onclick = function() {
+            this.classList.toggle("active");
+            if (panel.style.maxHeight) {
+                panel.style.maxHeight = null;
+            } else {
+                panel.style.maxHeight = panel.scrollHeight + "px";
+            }
+        };
+    }
+
+    // --- YENİ EKLENEN: Helper Fonksiyonlar ---
+    document.addEventListener("visibilitychange", function() {
+        const testEkrani = document.getElementById("testEkrani");
+        // Sadece test ekranı görünürken (hidden sınıfı yoksa) say
+        if (testEkrani && !testEkrani.classList.contains("hidden") && document.hidden) {
+            ihlalSayisi++;
+            document.title = `⚠️ UYARI (${ihlalSayisi}) - Sekme Değiştirildi!`;
+        } else if (!document.hidden) {
+            document.title = "Tarih Dersi Eğitim Portalı";
+        }
+    });
+
+    function getMotivasyonMesaji(puan) {
+        if (puan === "DEĞERLENDİRİLECEK") return "Sonuçlar öğretmeniniz tarafından değerlendirilecektir.";
+        if (puan < 50) return "Daha fazla çalışmalısın. Konu tekrarı yapmanı öneririm. 🛑";
+        if (puan < 85) return "İyi gidiyorsun, biraz daha dikkatle mükemmel olabilir. 👍";
+        return "Tebrikler! Konuyu harika kavramışsın. 🌟";
+    }
+
+    function mesajKutusunuGoster(puan) {
+        let msgBox = document.getElementById("ozelMotivasyonKutusu");
+        if (!msgBox) {
+            msgBox = document.createElement("div");
+            msgBox.id = "ozelMotivasyonKutusu";
+            msgBox.style.cssText = "text-align: center; margin-top: 15px; font-weight: bold; font-size: 18px; padding: 10px; border-radius: 5px;";
+            const puanKutusu = document.getElementById("puanKutusu");
+            if(puanKutusu) puanKutusu.appendChild(msgBox);
+        }
+        
+        msgBox.innerText = getMotivasyonMesaji(puan);
+        
+        if (typeof puan === 'number') {
+            if(puan < 50) msgBox.style.color = "#e74c3c";
+            else if(puan < 85) msgBox.style.color = "#f39c12";
+            else msgBox.style.color = "#27ae60";
+        } else {
+            msgBox.style.color = "#3498db";
+        }
     }
 </script>
 
