@@ -5,12 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tarih Dersi Eğitim Portalı</title>
     <style>
-        /* --- TEMEL STİLLER --- */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; user-select: none; /* Metin seçimi engeli */ }
-        .container { background: white; max-width: 900px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); position: relative; z-index: 10; }
-        h1, h2, h3 { text-align: center; color: #2c3e50; }
+        /* --- CSS DEĞİŞKENLERİ (TEMA VE FONT AYARLARI İÇİN) --- */
+        :root {
+            --bg-color: #f4f6f9;
+            --container-bg: #ffffff;
+            --text-color: #2c3e50;
+            --accent-color: #3498db;
+            --card-border: #eee;
+            --option-hover: #f0f8ff;
+            --font-size-base: 16px; /* Varsayılan Font Boyutu */
+        }
+
+        /* --- SADECE SEPYA (OKUMA) MODU --- */
+        body.sepia-mode {
+            --bg-color: #f4ecd8; /* Saman Kağıdı */
+            --container-bg: #fdf6e3;
+            --text-color: #5b4636; /* Yumuşak Kahve */
+            --accent-color: #d35400;
+            --card-border: #e0d6b8;
+            --option-hover: #ece2c6;
+        }
+
+        /* --- GENEL STİL --- */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color);
+            margin: 0; padding: 20px; 
+            user-select: none; 
+            transition: background 0.3s, color 0.3s;
+        }
+        .container { 
+            background: var(--container-bg); 
+            max-width: 900px; margin: 0 auto; padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); 
+            position: relative; z-index: 10; 
+        }
+        h1, h2, h3 { text-align: center; color: var(--text-color); }
         
-        /* --- GÜVENLİK FİLİGRANI (WATERMARK) --- */
+        /* --- İLERLEME ÇUBUĞU (EN ÜSTTE) --- */
+        #progress-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 5px; background: transparent; z-index: 9999;
+        }
+        #progress-bar {
+            width: 0%; height: 100%; background: #27ae60; transition: width 0.3s;
+        }
+
+        /* --- AYARLAR PANELİ (SAĞ ÜST) --- */
+        .settings-panel {
+            display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 15px;
+        }
+        .settings-btn {
+            background: #ddd; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; color: #333; transition: 0.2s;
+        }
+        .settings-btn:hover { opacity: 0.8; transform: translateY(-1px); }
+        
+        /* Aktif buton stili */
+        .settings-btn.active-mode {
+            background: #d35400; color: white;
+        }
+
+        /* --- FİLİGRAN --- */
         #watermark {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 9999;
@@ -23,69 +79,109 @@
 
         /* --- GİRİŞ & MENÜ --- */
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; color: #34495e; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
+        input, select, textarea { 
+            width: 100%; padding: 12px; 
+            border: 1px solid var(--card-border); 
+            background: var(--container-bg);
+            color: var(--text-color);
+            border-radius: 6px; font-size: 16px; box-sizing: border-box; 
+        }
         textarea { height: 120px; resize: vertical; }
         
         .intro-box { background-color: #fff8e1; border-left: 5px solid #f1c40f; padding: 15px; margin-bottom: 25px; border-radius: 5px; font-size: 15px; line-height: 1.6; color: #555; }
         
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-        .menu-btn { padding: 20px; font-size: 16px; cursor: pointer; border-radius: 8px; border: 2px solid #3498db; background: #fff; color: #3498db; transition: 0.3s; font-weight: bold; }
-        .menu-btn:hover { background: #3498db; color: white; transform: translateY(-3px); }
+        .menu-btn { padding: 20px; font-size: 16px; cursor: pointer; border-radius: 8px; border: 2px solid var(--accent-color); background: var(--container-bg); color: var(--accent-color); transition: 0.3s; font-weight: bold; }
+        .menu-btn:hover { background: var(--accent-color); color: white; transform: translateY(-3px); }
         .menu-btn.klasik { border-color: #e67e22; color: #e67e22; }
         .menu-btn.klasik:hover { background: #e67e22; color: white; }
 
-        /* --- AKORDİYON (DERS MATERYALLERİ) --- */
+        /* --- DERS MATERYALLERİ (AKORDİYON) --- */
         .accordion-btn { background-color: #8e44ad; color: white; cursor: pointer; padding: 18px; width: 100%; border: none; text-align: left; outline: none; font-size: 16px; transition: 0.4s; border-radius: 8px; margin-top: 20px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
         .accordion-btn:after { content: '\002B'; font-weight: bold; font-size: 20px; } 
         .accordion-btn.active:after { content: "\2212"; }
         .accordion-btn:hover { background-color: #732d91; }
-        .panel { padding: 0 18px; background-color: white; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; border-left: 2px solid #8e44ad; margin-bottom: 10px; }
-        .file-link { display: block; padding: 10px; border-bottom: 1px solid #eee; text-decoration: none; color: #333; transition: 0.2s; }
-        .file-link:hover { background: #f9f9f9; color: #8e44ad; padding-left: 15px; }
+        .panel { padding: 0 18px; background-color: var(--container-bg); max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; border-left: 2px solid #8e44ad; margin-bottom: 10px; }
+        .file-link { display: block; padding: 10px; border-bottom: 1px solid var(--card-border); text-decoration: none; color: var(--text-color); transition: 0.2s; }
+        .file-link:hover { background: var(--option-hover); color: #8e44ad; padding-left: 15px; }
 
-        /* --- SINAV EKRANI & NAVİGASYON --- */
-        .sticky-header { position: sticky; top: 0; background: white; padding: 10px 0; z-index: 100; border-bottom: 2px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        /* --- TEST EKRANI --- */
+        .sticky-header { 
+            position: sticky; top: 0; 
+            background: var(--container-bg); 
+            padding: 10px 0; z-index: 100; 
+            border-bottom: 2px solid var(--card-border); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        }
         .timer-box { font-size: 24px; font-weight: bold; color: #e74c3c; text-align: center; margin-bottom: 10px; }
         
         .nav-map { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-bottom: 10px; }
         .nav-dot { width: 30px; height: 30px; border-radius: 4px; background: #ecf0f1; border: 1px solid #bdc3c7; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; color: #7f8c8d; font-weight: bold; }
-        .nav-dot.answered { background: #3498db; color: white; border-color: #2980b9; }
+        .nav-dot.answered { background: var(--accent-color); color: white; border-color: #2980b9; }
         .nav-dot.flagged { background: #f39c12; color: white; border-color: #d35400; }
         
-        .question-card { background: #fff; border: 1px solid #eee; padding: 20px; margin-bottom: 20px; border-radius: 8px; position: relative; scroll-margin-top: 180px; /* Navigasyon için pay */ }
+        .question-card { 
+            background: var(--container-bg); 
+            border: 1px solid var(--card-border); 
+            padding: 20px; margin-bottom: 20px; border-radius: 8px; 
+            position: relative; scroll-margin-top: 180px; 
+        }
+        /* Dinamik Font Boyutu İçin Class */
+        .question-text { font-size: var(--font-size-base); margin-bottom: 15px; font-weight: 600; line-height: 1.6; }
+        
         .question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .question-number { font-weight: bold; color: #2c3e50; font-size: 18px; }
+        .question-number { font-weight: bold; color: var(--text-color); font-size: 18px; }
         .flag-btn { background: none; border: 1px solid #f39c12; color: #f39c12; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
         .flag-btn.active { background: #f39c12; color: white; }
         
-        .options label { display: block; padding: 12px; margin-bottom: 8px; cursor: pointer; border-radius: 6px; border: 1px solid #eee; transition: background 0.2s; }
-        .options label:hover { background-color: #f0f8ff; border-color: #3498db; }
+        .options label { 
+            display: block; padding: 12px; margin-bottom: 8px; cursor: pointer; 
+            border-radius: 6px; border: 1px solid var(--card-border); 
+            transition: background 0.2s; 
+            font-size: var(--font-size-base); /* Seçeneklerde de dinamik font */
+        }
+        .options label:hover { background-color: var(--option-hover); border-color: var(--accent-color); }
         .options input { width: auto; margin-right: 10px; }
 
-        /* --- BUTONLAR & FOOTER --- */
+        /* --- BUTONLAR --- */
         .action-btn { width: 100%; padding: 14px; background-color: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; margin-top: 15px; font-weight: bold; }
         .action-btn:hover { background-color: #219150; }
         .back-btn { background-color: #95a5a6; }
         .back-btn:hover { background-color: #7f8c8d; }
         
         .footer { margin-top: 40px; text-align: center; font-size: 13px; color: #95a5a6; border-top: 1px solid #eee; padding-top: 20px; }
-        
         .hidden { display: none !important; }
         
-        /* Sonuç Raporu */
-        .explanation-card { padding: 15px; margin-bottom: 10px; border-radius: 6px; border-left: 5px solid #ccc; background: #fafafa; }
+        /* --- SONUÇ EKRANI & MODAL --- */
+        .explanation-card { padding: 15px; margin-bottom: 10px; border-radius: 6px; border-left: 5px solid #ccc; background: #fafafa; color: #333; }
         .explanation-card.correct { border-left-color: #27ae60; background-color: #eafaf1; }
         .explanation-card.wrong { border-left-color: #e74c3c; background-color: #fdedec; }
+        
+        /* Akıllı Özet Modalı */
+        .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: #fff; margin: 15% auto; padding: 20px; border-radius: 10px; width: 80%; max-width: 500px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .modal-btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        .modal-stat { font-size: 18px; margin: 10px 0; color: #333; }
 
     </style>
 </head>
-<body oncontextmenu="return false;"> <div id="watermark"></div>
+<body oncontextmenu="return false;"> 
+
+<div id="progress-container"><div id="progress-bar"></div></div>
+
+<div id="watermark"></div>
 
 <div class="container">
     
+    <div class="settings-panel">
+        <button class="settings-btn" onclick="fontDegistir(-1)" title="Yazıyı Küçült">A-</button>
+        <button class="settings-btn" onclick="fontDegistir(1)" title="Yazıyı Büyüt">A+</button>
+        <button class="settings-btn" id="btnOkumaModu" onclick="toggleOkumaModu()" title="Okuma Modunu Aç/Kapa">📜 Okuma Modu</button>
+    </div>
+
     <div id="girisEkrani">
-        <h1>Tarih Dersi Öğrenci Girişi</h1>
+        <h1>Tarih Dersi Tekrar Testleri Öğrenci Girişi</h1>
         <p style="text-align: center; color: #7f8c8d;">Sınava başlamak için bilgilerinizi giriniz.</p>
         
         <div class="form-group">
@@ -95,12 +191,15 @@
         <div class="form-group">
             <label>Sınıfınız:</label>
             <select id="sinif">
-                <option value="">Seçiniz</option>
+                <option value="">Sınıfınızı Seçin</option>
                 <option value="9-A">9-A</option>
                 <option value="9-B">9-B</option>
                 <option value="9-C">9-C</option>
                 <option value="9-D">9-D</option>
                 <option value="9-E">9-E</option>
+                <option value="9-F">9-F</option>
+                <option value="9-G">9-G</option>
+                <option value="9-H">9-H</option>
                 <option value="10-A">10-A</option>
                 <option value="10-B">10-B</option>
             </select>
@@ -120,7 +219,7 @@
         <h2>Hoşgeldin, <span id="kullaniciAdiSpan"></span></h2>
         
         <div class="intro-box">
-            Sevgili öğrenciler; sizin için hazırladığım bu testler ve ders notları derslerde işlediğimiz konularımızı anlamlı öğrenmeye dönüştürmek için hazırlanmıştır. Çoktan seçmeli testleriniz "Basit, Orta, Zor" şeklinde sizlere sunulmuş olup derslerdeki dikkat seviyenizi ve not alma alışkanlığınızı ölçerken "Açık Uçlu (Klasik)" sınavınız ise MEB Maarif Modelinin sizlerden istediği <strong>"YORUMLAMA ve ANALİZ BECERİSİ"</strong>ni ölçmek üzere hazırlanmıştır. Bu sınavları sizlere derslerde verdiğim direktifler doğrultusunda çözmeniz sadece Tarih dersinize değil bütün derslerinize olumlu katkı yapacaktır.
+            Sevgili öğrenciler; sizin için hazırladığım bu testler ve ders notları derslerde işlediğimiz konularımızı anlamlı öğrenmeye dönüştürmek için hazırlanmıştır. Çoktan seçmeli testleriniz "Basit, Orta, Zor" şeklinde sizlere sunulmuş olup derslerdeki dikkat seviyenizi ve not alma alışkanlığınızı ölçerken "Açık Uçlu (Klasik)" sınavınız ise MEB Maarif Modelinin sizlerden istediği <strong>"YORUMLAMA ve ANALİZ BECERİSİ"</strong>ni ölçmek üzere hazırlanmıştır.
         </div>
 
         <p style="text-align: center; font-weight: bold;">Lütfen bir işlem seçiniz:</p>
@@ -129,18 +228,16 @@
             <button class="menu-btn" onclick="testSec('test1')">📝 1. Ünite Testi<br><small>(30 Soru - 30 Dk)</small></button>
             <button class="menu-btn" onclick="testSec('test2')">📝 2. Ünite Testi<br><small>(30 Soru - 30 Dk)</small></button>
             <button class="menu-btn" onclick="testSec('test3')">📝 3. Ünite Testi<br><small>(30 Soru - 30 Dk)</small></button>
-            <button class="menu-btn klasik" onclick="testSec('klasik')">✍️ Klasik Sınav<br><small>(Açık Uçlu - 40 Dk)</small></button>
+            <button class="menu-btn klasik" onclick="testSec('klasik')">✍️ Klasik Sınav<br><small>(Metne Dayalı - 40 Dk)</small></button>
         </div>
 
         <button class="accordion-btn">📚 Ders Materyalleri ve İndirmeler</button>
-        <div class="panel" id="materyalPaneli">
-            </div>
+        <div class="panel" id="materyalPaneli"></div>
 
         <div class="footer">Hazırlayan: Murat Mutlu, Tarih Öğretmeni</div>
     </div>
 
     <div id="testEkrani" class="hidden">
-        
         <div class="sticky-header">
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 10px;">
                 <h3 id="testBaslik" style="margin:0;">Sınav</h3>
@@ -148,40 +245,51 @@
             </div>
             <div class="nav-map" id="navMap"></div>
         </div>
-
         <div id="sorularAlani" style="margin-top: 20px;"></div>
-
-        <button class="action-btn" onclick="testiBitir()">Sınavı Bitir ve Gönder</button>
+        <button class="action-btn" onclick="ozetGoster()">Sınavı Bitir ve Gönder</button>
     </div>
 
     <div id="sonucEkrani" class="hidden">
         <h2>Sınav Tamamlandı!</h2>
+        
         <div id="puanKutusu" style="text-align: center; display: none;">
             <div style="font-size: 50px; color: #27ae60; font-weight: bold;" id="puanGostergesi"></div>
-            <p>Puanınız sisteme kaydedildi.</p>
+            <div id="ozelMotivasyonKutusu" style="text-align: center; margin-top: 15px; font-weight: bold; font-size: 18px; padding: 10px; border-radius: 5px;"></div>
         </div>
+
         <div id="klasikMesaj" style="text-align: center; display: none;">
             <h3 style="color: #27ae60;">Cevaplarınız Kaydedildi.</h3>
             <p>Öğretmeniniz değerlendirdikten sonra notunuzu açıklayacaktır.</p>
         </div>
         
         <div style="background: #f1f1f1; padding: 10px; margin: 20px 0; border-radius: 5px; text-align: center;">
-            Tamamlama Süresi: <span id="bitirmeSuresi" style="font-weight: bold;"></span>
+            <span id="bitirmeSuresi" style="font-weight: bold;"></span> | 
+            <span id="ihlalSayisi" style="color:red; font-weight:bold;"></span>
         </div>
 
         <div id="detayliCozumler"></div>
-        <button class="action-btn back-btn" onclick="location.reload()">Çıkış Yap</button>
+        <button class="action-btn back-btn" onclick="localStorage.clear(); location.reload()">Çıkış Yap</button>
+    </div>
+
+    <div id="ozetModal" class="modal">
+        <div class="modal-content">
+            <h3 style="color:#2c3e50;">Sınav Özeti</h3>
+            <div id="modalIcerik"></div>
+            <div class="modal-btn-group">
+                <button class="action-btn back-btn" onclick="modalKapat()" style="margin-top:0;">Geri Dön</button>
+                <button class="action-btn" onclick="testiBitir()" style="margin-top:0;">Evet, Bitir</button>
+            </div>
+        </div>
     </div>
 
 </div>
 
 <script>
     // --- 1. AYARLAR ---
-    const SCRIPT_URL = "BURAYA_URL_YAPISTIR"; // <-- BURAYA GOOGLE SCRIPT URL'Nİ YAPIŞTIR
+    const SCRIPT_URL = "BURAYA_URL_YAPISTIR"; // <-- GOOGLE SCRIPT URL BURAYA
     const DOGRU_SIFRE = "1234"; 
 
-    // --- 2. DERS MATERYALLERİ LİSTESİ ---
-    // Buradaki dosya isimlerini GitHub'daki gerçek isimlerle değiştir.
+    // --- 2. DERS MATERYALLERİ ---
     const dersMateryalleri = [
         {baslik: "📂 1. Ünite Ders Notları (PDF)", link: "materyaller/notlar/1_unite_notlari.pdf"},
         {baslik: "📂 2. Ünite Ders Notları (PDF)", link: "materyaller/notlar/2_unite_notlari.pdf"},
@@ -189,8 +297,22 @@
         {baslik: "🧠 Tarih Bilimi Kavram Haritası", link: "materyaller/kavram_haritalari/tarih_kavram_haritasi.pdf"}
     ];
 
-    // --- 3. TEST VERİLERİ (HEPSİ DAHİL) ---
-    // Test 1 (Önceki veriden), Test 2 ve 3 (Yeni parsed veriden)
+    // --- 3. SORU HAVUZU (TAM LİSTE) ---
+    // YENİ KLASİK SORULAR (Word Dosyasından Aktarıldı)
+    const klasikSorular = [
+        { soru: "\"Ünlü tarihçi Herodot, tarihçiliğin babası olarak bilinir. O, 'Historia' adlı eserinde gezdiği yerleri, gördüğü halkları ve duyduğu efsaneleri anlatmıştır. Ancak Herodot olayları anlatırken neden ve sonuç ilişkisi kurmaktan ziyade, olayları hikayeleyici bir dille, kulaktan dolma bilgilere ve mitolojiye de yer vererek aktarmıştır.\"<br>Yukarıdaki metne göre, Herodot'un tarih yazıcılığı anlayışını 'Bilimsel Tarihçilik'ten ayıran en temel eksiklik nedir? Açıklayınız.", cevap: "Herodot'un anlatımında 'neden-sonuç ilişkisinin' kurulmaması ve bilgilerin 'belgelere' değil, efsane ve duyumlara dayanması onu bilimsel tarihçilikten ayırır. Bilimsel tarih; belge, kanıt ve neden-sonuç ilişkisine dayanır, hikayecilikten uzaktır." },
+        { soru: "\"Mısırlılar Nil Nehri'nin taşma zamanını hesaplamak için Güneş yılı esaslı takvimi, Sümerler ise dini ibadetlerini düzenlemek için Ay yılı esaslı takvimi icat etmişlerdir.\"<br>Bu bilgilere bakarak, insanoğlunun 'takvim' ve 'zaman ölçme' ihtiyacının ortaya çıkmasında hangi faktörlerin etkili olduğunu yazınız.", cevap: "İnsanların takvimi icat etmesinde; tarımsal faaliyetleri düzenleme (Nil'in taşması, hasat zamanı) ve dini ibadetlerin zamanını belirleme (Sümerler) gibi 'ekonomik, coğrafi ve dini' ihtiyaçlar etkili olmuştur." },
+        { soru: "\"Bir arkeolojik kazı sırasında toprak altından şu buluntular çıkarılmıştır: Kırık bir çömlek parçası, üzerinde resimler olan bir madeni para, yanmış buğday taneleri ve kilden yapılmış bir tablet.\"<br>Bu buluntuları 'Yazılı Kaynaklar' ve 'Yazısız (Kalıntı) Kaynaklar' olarak sınıflandırınız.", cevap: "Yazılı Kaynaklar: Madeni para (üzerindeki yazılar varsa), Kil tablet. Yazısız (Kalıntı): Kırık çömlek parçası, Yanmış buğday taneleri." },
+        { soru: "\"Tarih öğretmeni derste şu örneği vermiştir: 'Malazgirt Savaşı (1071) somut, başlangıcı ve bitişi belli bir gelişmedir. Ancak Anadolu'nun Türkleşmesi, bu savaşla başlayıp yüzyıllar süren genel bir süreçtir.'\" Metindeki örnekten yola çıkarak 'Tarihi Olay' ve 'Tarihi Olgu' kavramları arasındaki farkı bir cümle ile açıklayınız.", cevap: "Tarihi Olay; kısa süreli, anlık ve somut gelişmelerdir (Savaş). Tarihi Olgu ise; olayların sonucunda ortaya çıkan, uzun sürece yayılan ve süreklilik gösteren soyut değişimlerdir (Türkleşme)." },
+        { soru: "\"Orta Çağ Avrupa'sında veba salgını sırasında doktorlar, hastalığın 'kötü kokulardan' yayıldığını düşünerek gagalı maskeler takmış ve hastaları kan akıtarak tedavi etmeye çalışmışlardır. Bugün biz bunun tıbben yanlış olduğunu biliyoruz.\"<br>Bir tarihçi bu durumu incelerken 'O dönemin doktorları çok cahilmiş.' demek yerine nasıl bir yaklaşım sergilemelidir? 'Tarihsel Empati' kavramını kullanarak açıklayınız.", cevap: "Tarihçi, geçmişi bugünün bilimsel bilgisiyle yargılamamalıdır (Anakronizm). Bunun yerine 'Tarihsel Empati' yaparak, o dönemin şartlarını, bilgi birikimini ve imkanlarını göz önüne almalı; doktorların o günkü mevcut bilgiyle ellerinden geleni yaptığını anlamaya çalışmalıdır." },
+        { soru: "\"Kadeş Savaşı sonrasında Hitit kaynakları savaşı Hititlerin kazandığını, Mısır tapınak duvarları ise Mısırlıların kazandığını yazmaktadır.\"<br>Bu durum, tarih araştırmalarında 'tek bir kaynağa güvenmenin' sakıncalarını nasıl gösterir? Tarihçi gerçeğe ulaşmak için ne yapmalıdır?", cevap: "Bu durum, kaynakların taraflı (subjektif) olabileceğini gösterir. Sadece tek tarafa bakmak tarihçiyi yanıltır. Tarihçi gerçeğe ulaşmak için 'Kaynak Karşılaştırması' (Terkip/Sentez öncesi Tenkit) yapmalı, farklı kaynakları kıyaslayarak ortak doğruları bulmalıdır." },
+        { soru: "\"Ünlü tarihçi Halil İnalcık şöyle der: 'Gerçek bir tarihçi kaynaklara gitmek zorundadır. Arşivde belge bulmadan, sadece yorumlara dayalı yazılan tarih, roman olmaktan öteye gidemez.'\" Halil İnalcık bu sözüyle tarih biliminin hangi yöntem basamağının (5T) vazgeçilmez olduğunu vurgulamaktadır? Nedenini açıklayınız.", cevap: "Halil İnalcık 'Tarama' (Kaynak Arama) basamağını ve belgelere dayanma zorunluluğunu vurgulamaktadır. Çünkü tarih, deney ve gözlem yapamaz; onun laboratuvarı belgelerdir. Belgesiz bilgi kanıtlanamaz, bilimsel nitelik taşımaz." },
+        { soru: "\"Dijitalleşme sayesinde bugün binlerce yıllık el yazması eserlere evimizden tek tıkla ulaşabiliyoruz. Ancak internette dolaşan 'Tarihte ilk Türk uçağı 15. yüzyılda yapıldı' gibi sahte belgeler ve kurgu videolar da hızla yayılıyor.\"<br>Metne göre, dijital tarihçiliğin araştırmacılara sağladığı en büyük 'avantaj' ve yarattığı en büyük 'risk' nedir?", cevap: "Avantaj: Bilgiye ve kaynaklara erişimin hızlanması, mekandan bağımsızlık (Erişilebilirlik). Risk: Bilgi kirliliği, manipüle edilmiş (sahte) belgelerin yayılması ve doğru bilgiyle yanlış bilginin birbirine karışması." },
+        { soru: "\"Fuat Köprülü, Türk tarihinin sadece Osmanlı Hanedanı'nın siyasi olaylarından ibaret olmadığını savunmuştur. Ona göre Türk tarihi; edebiyatı, sanatı, ekonomisi, dini inanışları ve halkın yaşayışıyla bir bütün olarak incelenmelidir.\"<br>Fuat Köprülü'nün bu yaklaşımı, tarih yazımında 'Bütüncül Tarih' (Sosyal Tarih) anlayışı açısından neden önemlidir? Klasik siyasi tarih anlayışından farkını belirtiniz.", cevap: "Klasik siyasi tarih sadece savaşları, antlaşmaları ve liderleri anlatır. Fuat Köprülü ise tarihin sadece devletin değil, 'milletin' tarihi olduğunu savunur. Toplumun kültürü, ekonomisi ve sanatı incelenmeden bir medeniyetin tam olarak anlaşılamayacağını belirtir. Bu, tarihi 'çok yönlü' ve 'bütüncül' ele almaktır." },
+        { soru: "\"Tarihçi E.H. Carr, 'Tarih Nedir?' adlı eserinde şöyle der: 'Tarih, tarihçi ile olgular arasında kesintisiz bir diyalog sürecidir. Geçmişin bugünün gözüyle yeniden inşasıdır.'\" Bu söze göre tarih 'değişmez, donuk bir geçmiş' midir, yoksa 'yorumlanan bir süreç' midir? Tarihçinin bakış açısı (subjektifliği) tarihi bilgiyi nasıl etkiler? Tartışınız.", cevap: "E.H. Carr'a göre tarih donuk bir geçmiş yığını değil, tarihçinin seçtiği ve yorumladığı dinamik bir süreçtir. Tarihçi, belgeleri seçerken ve yorumlarken kendi döneminin ve dünya görüşünün etkisinde kalır. Bu nedenle mutlak, %100 objektif bir tarih yoktur; tarihçinin süzgecinden geçmiş bir 'inşa' vardır. Her nesil tarihi kendi sorularıyla yeniden yazar." }
+    ];
+
+    // TEST VERİLERİ (q9son.txt Dosyasındaki Tüm Sorular)
     const allTests = {
         test1: [
             {soru: "Aşağıdakilerden hangisi 'birinci elden kaynak' (ana kaynak) tanımına en uygundur?", secenekler: ["A) Ders kitabı", "B) Tarihi bir roman", "C) Fatih Sultan Mehmet'in yazdığı ferman", "D) Ansiklopedi", "E) Tarih öğretmeninin notları"], cevap: "C) Fatih Sultan Mehmet'in yazdığı ferman", aciklama: "Birinci elden kaynaklar, olayın geçtiği döneme ait olan ve olaya tanıklık eden kaynaklardır."},
@@ -228,35 +350,74 @@
         test3: [{"soru": "Tarih biliminin yöntemi, diğer pozitif bilimlerden (Fizik, Kimya vb.) hangi yönüyle temelden ayrılır?", "secenekler": ["A) Gözlem yapmasıyla", "B) Deney yapılamamasıyla", "C) Rapor tutmasıyla", "D) Araştırma yapmasıyla", "E) Sonuç çıkarmasıyla"], "cevap": "B) Deney yapılamamasıyla", "aciklama": "Tarihte deney yapılamaz."}, {"soru": "'Olay' (Vaka) ve 'Olgu' (Vakıa) kavramları düşünüldüğünde, aşağıdakilerden hangisi bir 'Tarihi Olay' örneğidir?", "secenekler": ["A) Anadolu'nun Türkleşmesi", "B) Türkiye'nin çağdaşlaşması", "C) İstanbul'un Fethi (1453)", "D) İslamiyet'in yayılması", "E) Milliyetçilik akımının güçlenmesi"], "cevap": "C) İstanbul'un Fethi (1453)", "aciklama": "İstanbul'un Fethi somut bir olaydır."}, {"soru": "Tarih araştırmalarında 'birinci elden kaynak' (ana kaynak) aşağıdakilerden hangisidir?", "secenekler": ["A) Olayın geçtiği döneme ait her türlü bulgu ve belge", "B) Ders kitapları", "C) Ansiklopediler", "D) Tarihi romanlar", "E) Öğretmen notları"], "cevap": "A) Olayın geçtiği döneme ait her türlü bulgu ve belge", "aciklama": "O döneme ait her şey birinci eldir."}, {"soru": "Türklerin kullandığı takvimlerden hangisi 'Güneş Yılı' esasına dayanmaz?", "secenekler": ["A) 12 Hayvanlı Türk Takvimi", "B) Celali Takvim", "C) Rumi Takvim", "D) Hicri Takvim", "E) Miladi Takvim"], "cevap": "D) Hicri Takvim", "aciklama": "Hicri takvim Ay yılı esaslıdır."}, {"soru": "Tarihi olayların doğru değerlendirilebilmesi için olayın geçtiği 'yer' ve 'zaman'ın bilinmesi neden zorunludur?", "secenekler": ["A) Ezber yapmayı kolaylaştırmak için", "B) Olayın neden-sonuç ilişkisini kurabilmek ve o günün şartlarına göre değerlendirebilmek için", "C) Kitapları kalınlaştırmak için", "D) Sadece savaşları incelemek için", "E) Harita çizebilmek için"], "cevap": "B) Olayın neden-sonuç ilişkisini kurabilmek ve o günün şartlarına göre değerlendirebilmek için", "aciklama": "Yer ve zaman, olayın bağlamını kurmayı sağlar."}, {"soru": "Aşağıdakilerden hangisi 'Tarih Yazıcılığı' türlerinden biri olan 'Hikayeci Tarih'in en bilinen temsilcisidir?", "secenekler": ["A) Heredot", "B) Halil İnalcık", "C) Thukydides", "D) İlber Ortaylı", "E) Voltaire"], "cevap": "A) Heredot", "aciklama": "Heredot hikayeci tarihin babasıdır."}, {"soru": "Eski paraları inceleyerek tarihe yardımcı olan bilim dalı hangisidir?", "secenekler": ["A) Coğrafya", "B) Nümizmatik", "C) Kimya", "D) Biyoloji", "E) Sosyoloji"], "cevap": "B) Nümizmatik", "aciklama": "Nümizmatik para bilimidir."}, {"soru": "Tarih araştırmasının 5T basamağından ilki olan 'Tarama' ne anlama gelir?", "secenekler": ["A) Kaynakların okunması", "B) Kaynakların sınıflandırılması", "C) Kaynak arama ve toplama", "D) Kaynakların eleştirilmesi", "E) Eserin yazılması"], "cevap": "C) Kaynak arama ve toplama", "aciklama": "Tarama kaynak toplama işidir."}, {"soru": "Aşağıdaki takvimlerden hangisi Türklerin İslamiyet'i kabulünden ÖNCE kullandığı takvimdir?", "secenekler": ["A) Hicri Takvim", "B) Rumi Takvim", "C) Celali Takvim", "D) 12 Hayvanlı Türk Takvimi", "E) Miladi Takvim"], "cevap": "D) 12 Hayvanlı Türk Takvimi", "aciklama": "İslamiyet öncesi 12 Hayvanlı Türk Takvimi kullanılmıştır."}, {"soru": "Dijital kütüphanelerin araştırmacılara sağladığı 'mekandan bağımsızlık' ne demektir?", "secenekler": ["A) Kütüphanelerin kapanması", "B) Araştırmacının evinden veya ofisinden dünyanın herhangi bir yerindeki arşive ulaşabilmesi", "C) Sadece uzayla ilgili araştırma yapılması", "D) Tarihçilerin seyahat etmesinin yasaklanması", "E) Binaların yıkılması"], "cevap": "B) Araştırmacının evinden veya ofisinden dünyanın herhangi bir yerindeki arşive ulaşabilmesi", "aciklama": "İnternet sayesinde her yerden erişim mümkündür."}, {"soru": "Fatih Sultan Mehmet dönemini araştıran bir tarihçinin, o döneme ait 'altın paraları' ve 'fermanları' incelemesi, aşağıdaki kaynak türlerinden hangilerine başvurduğunu gösterir?", "secenekler": ["A) Sadece Sözlü Kaynaklar", "B) Yazılı Kaynaklar ve Kalıntı/Nesne Kaynaklar", "C) Sadece Görsel Kaynaklar", "D) İkinci El Kaynaklar", "E) Dijital Kaynaklar"], "cevap": "B) Yazılı Kaynaklar ve Kalıntı/Nesne Kaynaklar", "aciklama": "Ferman yazılı, para nesne kaynaktır."}, {"soru": "Tarih biliminde 'Neden-Sonuç' ilişkisi neden bu kadar önemlidir?", "secenekler": ["A) Olayları ezberlemeyi kolaylaştırdığı için", "B) Tarihi bir masal olmaktan çıkarıp, olaylar arasındaki sürekliliği ve mantıksal bağı kurduğu için", "C) Tarihçilerin işini zorlaştırdığı için", "D) Sınav soruları hazırlamak için", "E) Geleceği kesin olarak bilmek için"], "cevap": "B) Tarihi bir masal olmaktan çıkarıp, olaylar arasındaki sürekliliği ve mantıksal bağı kurduğu için", "aciklama": "Nedensellik olaylar arası bağı kurar."}, {"soru": "Celali Takvim ve Rumi Takvim'in ortak özelliği aşağıdakilerden hangisidir?", "secenekler": ["A) İkisinin de Ay yılı esaslı olması", "B) İkisinin de sadece Türkler tarafından kullanılması", "C) İkisinin de mali (ekonomik) işleri düzenlemek amacıyla hazırlanmış Güneş yılı esaslı takvimler olması", "D) Başlangıçlarının Hz. İsa'nın doğumu olması", "E) Günümüzde hala resmi takvim olarak kullanılmaları"], "cevap": "C) İkisinin de mali (ekonomik) işleri düzenlemek amacıyla hazırlanmış Güneş yılı esaslı takvimler olması", "aciklama": "İkisi de mali işler için Güneş yılı esaslıdır."}, {"soru": "Tarih öncesi çağları (Taş Devri, Maden Devri) araştıran bir tarihçi, aşağıdaki yardımcı bilimlerden hangisinden YARARLANAMAZ?", "secenekler": ["A) Arkeoloji (Kazı Bilimi)", "B) Paleografya (Yazı Bilimi)", "C) Kimya (Karbon-14)", "D) Antropoloji (Irk Bilimi)", "E) Coğrafya"], "cevap": "B) Paleografya (Yazı Bilimi)", "aciklama": "Tarih öncesinde yazı yoktur."}, {"soru": "Dijital tarihçilikte 'veri güvenliği' neden önemli bir sorundur?", "secenekler": ["A) Bilgisayarların pahalı olması", "B) Dijital verilerin siber saldırılarla değiştirilebilir, silinebilir veya manipüle edilebilir olması", "C) Tarihçilerin şifrelerini unutması", "D) İnternetin yavaş olması", "E) Kağıt kullanımının artması"], "cevap": "B) Dijital verilerin siber saldırılarla değiştirilebilir, silinebilir veya manipüle edilebilir olması", "aciklama": "Dijital veri manipüle edilebilir."}, {"soru": "Bir tarih araştırmasında kaynakların 'güvenilirliğinin' sorgulandığı, yazarın taraflı olup olmadığının incelendiği aşama hangisidir?", "secenekler": ["A) Tarama", "B) Tasnif", "C) Tahlil", "D) Tenkit (Eleştiri)", "E) Terkip (Sentez)"], "cevap": "D) Tenkit (Eleştiri)", "aciklama": "Güvenilirlik sorgusu Tenkit aşamasıdır."}, {"soru": "'Öğretici Tarih' (Pragmatik Tarih) anlayışının temel amacı nedir?", "secenekler": ["A) Sadece gerçekleri anlatmak", "B) Topluma ahlaki dersler vermek, milli duyguları güçlendirmek ve kahramanlıkları öne çıkarmak", "C) Olayları neden-sonuç ilişkisi içinde incelemek", "D) Efsaneleri tamamen reddetmek", "E) Kronolojik sıralama yapmak"], "cevap": "B) Topluma ahlaki dersler vermek, milli duyguları güçlendirmek ve kahramanlıkları öne çıkarmak", "aciklama": "Öğretici tarih fayda ve ders odaklıdır."}, {"soru": "Mısır hiyerogliflerini veya Göktürk kitabelerini okumak isteyen bir tarihçi, öncelikle hangi alanda uzmanlaşmalıdır?", "secenekler": ["A) Paleografya ve Epigrafya", "B) Nümizmatik ve Kimya", "C) Coğrafya ve Arkeoloji", "D) Heraldik ve Sigillografya", "E) Etnografya ve İstatistik"], "cevap": "A) Paleografya ve Epigrafya", "aciklama": "Yazı ve kitabe bilimi gereklidir."}, {"soru": "Aşağıdakilerden hangisi dijitalleşmenin tarih araştırmalarına sağladığı 'demokratikleşme' etkisine örnektir?", "secenekler": ["A) Sadece profesörlerin arşivlere girebilmesi", "B) Sıradan insanların da kendi aile arşivlerini, fotoğraflarını dijital platformlarda paylaşarak tarih yazımına veri sunabilmesi", "C) Devletin tüm belgeleri gizlemesi", "D) Tarih kitaplarının sadece üniversitelerde satılması", "E) İnternetin ücretli olması"], "cevap": "B) Sıradan insanların da kendi aile arşivlerini, fotoğraflarını dijital platformlarda paylaşarak tarih yazımına veri sunabilmesi", "aciklama": "Herkesin tarih yazımına katkısı demokratikleşmedir."}, {"soru": "'Kronoloji bilimi olmadan tarih kördür.' sözü neyi ifade eder?", "secenekler": ["A) Tarihçilerin gözlük takması gerektiğini", "B) Olayların oluş sırası bilinmezse, neden-sonuç ilişkisinin kurulamayacağını ve olayın anlaşılamayacağını", "C) Tarihin bir sanat dalı olduğunu", "D) Zamanın önemsiz olduğunu", "E) Coğrafyanın daha önemli olduğunu"], "cevap": "B) Olayların oluş sırası bilinmezse, neden-sonuç ilişkisinin kurulamayacağını ve olayın anlaşılamayacağını", "aciklama": "Sıralama (kronoloji) olmadan neden-sonuç kurulamaz."}, {"soru": "Tarih araştırmalarında yapılan 'Anakronizm' (Tarih Yanılgısı) hatasına aşağıdakilerden hangisi örnektir?", "secenekler": ["A) Fatih Sultan Mehmet'in portresini İtalyan ressama yaptırması", "B) Osmanlı Devleti'nde telefon hatlarının kurulduğunun iddia edilmesi (16. yüzyıl için)", "C) Sümerlerin Ziggurat yapması", "D) Mısırlıların Güneş takvimini bulması", "E) Türklerin atı evcilleştirmesi"], "cevap": "B) Osmanlı Devleti'nde telefon hatlarının kurulduğunun iddia edilmesi (16. yüzyıl için)", "aciklama": "16. yüzyılda telefon yoktur, bu anakronizmdir."}, {"soru": "Dijital Tarihçilikte, 'Born-digital' (Doğuştan dijital) kaynaklar ile 'Digitized' (Dijitalleştirilmiş) kaynaklar arasındaki temel fark nedir?", "secenekler": ["A) Born-digital kaynakların kağıt formatının hiç olmaması, doğrudan dijital ortamda üretilmesi; diğerinin ise sonradan taranmasıdır.", "B) Born-digital kaynakların daha eski olmasıdır.", "C) Digitized kaynakların güvenilmez olmasıdır.", "D) Aralarında bir fark yoktur.", "E) Born-digital kaynakların sadece resim olmasıdır."], "cevap": "A) Born-digital kaynakların kağıt formatının hiç olmaması, doğrudan dijital ortamda üretilmesi; diğerinin ise sonradan taranmasıdır.", "aciklama": "Fark orijinalin kağıt olup olmamasıdır."}, {"soru": "Tarihsel bilginin üretim sürecinde 'Terkip' (Sentez) aşaması neden en yaratıcı aşama olarak kabul edilir?", "secenekler": ["A) Çünkü tarihçi burada hayal gücünü kullanarak olayları uydurur.", "B) Çünkü tarihçi, topladığı ve doğruladığı dağınık bilgileri kendi bakış açısı ve yorumuyla birleştirerek yeni bir eser ortaya koyar.", "C) Çünkü bu aşamada kaynak kullanılmaz.", "D) Çünkü en kısa süren aşamadır.", "E) Çünkü sadece resimler birleştirilir."], "cevap": "B) Çünkü tarihçi, topladığı ve doğruladığı dağınık bilgileri kendi bakış açısı ve yorumuyla birleştirerek yeni bir eser ortaya koyar.", "aciklama": "Sentez, tarihçinin yorumunu kattığı inşadır."}, {"soru": "Halil İnalcık'ın 'Belgesiz tarih olmaz' ilkesi neyi zorunlu kılar?", "secenekler": ["A) Olayların sadece kulaktan dolma bilgilerle yazılmasını", "B) Tarihçinin arşivlerde çalışarak birincil kaynaklara (ana kaynak) ulaşmasını", "C) Tarihin sadece siyasi olayları incelemesini", "D) Yabancı kaynakların reddedilmesini", "E) Ders kitaplarının tek kaynak olmasını"], "cevap": "B) Tarihçinin arşivlerde çalışarak birincil kaynaklara (ana kaynak) ulaşmasını", "aciklama": "Belge, bilimsel tarihin temelidir."}, {"soru": "Karbon-14 metodu neden her buluntuda kullanılamaz?", "secenekler": ["A) Sadece metal eşyalarda kullanılabilmesi", "B) Sadece organik (bir zamanlar canlı olan: kemik, ahşap, kumaş) maddelerde kullanılabilmesi", "C) Sadece su altı buluntularında çalışması", "D) Çok ucuz olması", "E) 100 yıllık eşyaları ölçememesi"], "cevap": "B) Sadece organik (bir zamanlar canlı olan: kemik, ahşap, kumaş) maddelerde kullanılabilmesi", "aciklama": "C-14 sadece organik maddelerde çalışır."}, {"soru": "Bir tarihçinin 'Sigillografya' ve 'Heraldik' bilimlerinden yararlanması neyi aydınlatır?", "secenekler": ["A) Halkın günlük yeme içme alışkanlıklarını", "B) Devletlerin resmi yazışma kurallarını, hükümdarlık sembollerini ve soyluluk ünvanlarını", "C) Coğrafi iklim şartlarını", "D) O dönemin müzik anlayışını", "E) Tarım aletlerinin yapısını"], "cevap": "B) Devletlerin resmi yazışma kurallarını, hükümdarlık sembollerini ve soyluluk ünvanlarını", "aciklama": "Mühür ve arma devlet sembolleridir."}, {"soru": "'Tarihsel Empati' yaparken düşülen tuzağa düşmeyen bakış açısı hangisidir?", "secenekler": ["A) 'Kardeş katli yasası çok vahşice, Osmanlı yöneticileri katilmiş.' demek.", "B) 'O dönemde devletin parçalanmasını önlemek (Nizam-ı Alem) için, dönemin şartlarında bu uygulama zorunlu görülmüştür.' demek.", "C) 'Eski insanlar insan haklarını hiç bilmiyormuş.' diye yargılamak.", "D) 'Geçmişte yaşayanlar bizden daha zekiydi.' demek.", "E) Olayları görmezden gelmek."], "cevap": "B) 'O dönemde devletin parçalanmasını önlemek (Nizam-ı Alem) için, dönemin şartlarında bu uygulama zorunlu görülmüştür.' demek.", "aciklama": "Olayı kendi döneminin şartlarıyla değerlendirmek empatidir."}, {"soru": "Dijital beşeri bilimler kapsamında kullanılan 'Veri Madenciliği', tarihçiye neyi gösterir?", "secenekler": ["A) Tek bir belgenin içeriğini", "B) Binlerce belge arasındaki gizli örüntüleri (pattern), örneğin yüzyıllar içindeki kelime kullanım sıklığının değişimini veya ticaret rotalarındaki yoğunluğu", "C) Belgelerin hangi kağıda yazıldığını", "D) Yazarın el yazısının güzelliğini", "E) Kitabın kapak rengini"], "cevap": "B) Binlerce belge arasındaki gizli örüntüleri (pattern), örneğin yüzyıllar içindeki kelime kullanım sıklığının değişimini veya ticaret rotalarındaki yoğunluğu", "aciklama": "Makro analiz ve örüntü keşfi sağlar."}, {"soru": "'Tarih, tarihçinin zihninde yeniden inşa edilir' görüşü neyi savunur?", "secenekler": ["A) Geçmişin olduğu gibi, %100 objektif şekilde aktarılabileceğini", "B) Tarihin tamamen kurgusal bir roman olduğunu", "C) Geçmişin kendisi ile tarih kitabı arasındaki farkı; tarihçinin seçiciliğinin ve yorumunun kaçınılmaz olduğunu", "D) Tarihçilerin hafızasının çok güçlü olduğunu", "E) Tarihin bilim olmadığını"], "cevap": "C) Geçmişin kendisi ile tarih kitabı arasındaki farkı; tarihçinin seçiciliğinin ve yorumunun kaçınılmaz olduğunu", "aciklama": "Tarih, tarihçinin kurgusudur."}, {"soru": "Aşağıdaki yardımcı bilim eşleştirmelerinden hangisi YANLIŞTIR?", "secenekler": ["A) Epigrafya - Kitabeler üzerindeki yazılar", "B) Antropoloji - İnsan ırklarının fiziksel özellikleri ve kültürleri", "C) Filoloji - Dillerin yapısı ve gelişimi", "D) Etnografya - Toplumların örf, adet ve kültürel eşyaları", "E) Paleografya - Eski paraların ekonomik değeri"], "cevap": "E) Paleografya - Eski paraların ekonomik değeri", "aciklama": "Paleografya yazı bilimidir, para bilimi Nümizmatiktir."}]
     };
 
-    // --- KLASİK SINAV SORULARI VE CEVAP ANAHTARI ---
-    const klasikSorular = [
-        {
-            soru: "1. Tarih biliminin tanımını yaparak, tarih biliminin konusunu kısaca açıklayınız.",
-            cevap: "Tarih; geçmişteki insan topluluklarının yaşayışlarını, kültürlerini, birbirleriyle olan ilişkilerini yer ve zaman göstererek, neden-sonuç ilişkisi içinde belgelere dayanarak objektif biçimde inceleyen sosyal bir bilimdir. Konusu insan faaliyetleridir."
-        },
-        {
-            soru: "2. 'Tarih tekerrürden ibarettir' sözünü tarih metodolojisi açısından yorumlayınız.",
-            cevap: "Tarihte olaylar birebir tekrar etmez (zaman ve aktörler değişir), ancak benzer sebepler benzer sonuçlar doğurur. Bu söz, tarihten ders çıkarılması gerektiğini vurgular."
-        },
-        {
-            soru: "3. Birinci elden kaynak ve ikinci elden kaynak arasındaki fark nedir? Örnek veriniz.",
-            cevap: "Birinci el: Olayın geçtiği döneme ait ana kaynaktır (Örn: Ferman, Para). İkinci el: Olaydan sonra ana kaynaklardan yararlanılarak oluşturulan eserdir (Örn: Ders Kitabı)."
-        }
-    ];
-
-    // --- DEĞİŞKENLER ---
+    // --- DEĞİŞKENLER & SETUP ---
     let ogrenci = {};
     let aktifTest = null;
-    let suankiSorular = []; // Karıştırılmış sorular
+    let suankiSorular = [];
     let timerInterval;
     let baslangicZamani;
-    let cevaplar = {}; // Öğrenci cevapları
-    let flagged = {}; // İşaretli sorular
-    
-    // --- YENİ EKLENEN: İhlal Sayacı ---
-    let ihlalSayisi = 0; 
+    let flagged = {}; 
+    let ihlalSayisi = 0;
+    let autoSaveData = {}; // Otomatik kayıt verisi
 
-    // --- 4. GİRİŞ VE MENÜ ---
+    // --- 4. BAŞLANGIÇ & AYARLAR ---
+    window.onload = function() {
+        // Tema ve Font ayarlarını yükle
+        if(localStorage.getItem('tema')) document.body.className = localStorage.getItem('tema');
+        
+        // Font düzeltmesi (px ekleyerek)
+        if(localStorage.getItem('fontSize')) {
+            document.documentElement.style.setProperty('--font-size-base', localStorage.getItem('fontSize') + 'px');
+        }
+        
+        // Crash Recovery (Kaldığı yerden devam)
+        const savedSession = localStorage.getItem('sinavSession');
+        if (savedSession) {
+            if(confirm("Yarım kalmış bir sınavınız var. Devam etmek ister misiniz?")) {
+                restoreSession(JSON.parse(savedSession));
+            } else {
+                localStorage.removeItem('sinavSession');
+            }
+        }
+        
+        renderMateryaller();
+        // Yanlışlıkla kapatma koruması
+        window.onbeforeunload = function() {
+            if (!document.getElementById("testEkrani").classList.contains("hidden")) {
+                return "Sınavınız bitmedi. Çıkarsanız verileriniz kaybolabilir.";
+            }
+        };
+    };
+
+    // --- TEK BUTONLU TEMA DEĞİŞTİRME ---
+    function toggleOkumaModu() {
+        const body = document.body;
+        if (body.classList.contains('sepia-mode')) {
+            body.className = ''; // Normale dön
+            localStorage.setItem('tema', '');
+        } else {
+            body.className = 'sepia-mode'; // Sepyaya geç
+            localStorage.setItem('tema', 'sepia-mode');
+        }
+    }
+
+    // --- DÜZELTİLMİŞ FONT FONKSİYONU ---
+    function fontDegistir(delta) {
+        const htmlRoot = document.documentElement;
+        // Mevcut fontu al, yoksa varsayılan 16 kabul et
+        let currentStyle = getComputedStyle(htmlRoot).getPropertyValue('--font-size-base').trim();
+        let currentSize = parseInt(currentStyle) || 16; 
+        
+        let newSize = currentSize + delta;
+
+        // Sınırlar (14px - 24px arası)
+        if(newSize >= 14 && newSize <= 24) {
+            htmlRoot.style.setProperty('--font-size-base', newSize + 'px');
+            localStorage.setItem('fontSize', newSize);
+        }
+    }
+
+    // --- 5. GİRİŞ & OTURUM ---
     function girisYap() {
         const ad = document.getElementById("adSoyad").value.trim();
         const sinif = document.getElementById("sinif").value;
@@ -267,71 +428,63 @@
         if (girilenSifre !== DOGRU_SIFRE) { alert("Hatalı şifre!"); return; }
 
         ogrenci = { ad, sinif, no };
-        
-        // Watermark oluştur
         watermarkOlustur(ad + " " + no);
 
         document.getElementById("girisEkrani").classList.add("hidden");
         document.getElementById("menuEkrani").classList.remove("hidden");
         document.getElementById("kullaniciAdiSpan").innerText = ad;
-        
-        // Akordiyonu hazırla
-        renderMateryaller();
     }
 
-    function watermarkOlustur(text) {
-        const container = document.getElementById("watermark");
-        container.innerHTML = "";
-        for (let i = 0; i < 15; i++) {
-            const div = document.createElement("div");
-            div.className = "watermark-text";
-            div.innerText = text;
-            container.appendChild(div);
-        }
-    }
-
-    // --- 5. TEST BAŞLATMA VE RENDER ---
+    // --- 6. TEST BAŞLATMA ---
     function testSec(testKodu) {
         aktifTest = testKodu;
         document.getElementById("menuEkrani").classList.add("hidden");
         document.getElementById("testEkrani").classList.remove("hidden");
         
-        // --- YENİ EKLENEN: Sayaç Sıfırlama ---
+        // Tam Ekran İsteği
+        if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(e=>{});
+
         ihlalSayisi = 0;
+        document.addEventListener("visibilitychange", ihlalTakip);
 
         const isKlasik = (testKodu === 'klasik');
-        
-        // Başlık ve Süre Ayarı
-        let baslik = isKlasik ? "Klasik Sınav (Açık Uçlu)" : 
-                     (testKodu === 'test1' ? "1. Ünite Testi" : 
-                     (testKodu === 'test2' ? "2. Ünite Testi" : "3. Ünite Testi"));
+        let baslik = isKlasik ? "Klasik Sınav (Açık Uçlu)" : "Çoktan Seçmeli Test";
         document.getElementById("testBaslik").innerText = baslik;
         
         const sureDk = isKlasik ? 40 : 30;
         sayacBaslat(sureDk * 60);
 
-        // Soruları Hazırla
         const alan = document.getElementById("sorularAlani");
         alan.innerHTML = "";
-        cevaplar = {};
         flagged = {};
+        autoSaveData = { cevaplar: {}, flagged: {}, ihlal: 0, testKodu: testKodu, ogrenci: ogrenci, startTime: Date.now() };
 
         if (isKlasik) {
             renderKlasik(alan);
         } else {
-            // Test sorularını karıştır
-            suankiSorular = shuffle([...allTests[testKodu]]); 
+            // Soruları VE Şıkları Karıştır
+            let hamSorular = allTests[testKodu] || [];
+            // Şık Karıştırma Logic'i:
+            suankiSorular = shuffle(JSON.parse(JSON.stringify(hamSorular))).map(s => {
+                s.shuffledOptions = shuffle([...s.secenekler]); 
+                return s;
+            });
             renderTest(alan);
         }
+        updateProgress();
+        saveToLocal();
     }
 
+    // --- 7. RENDER (GÖRÜNTÜLEME) ---
+    // Şık Temizleme Helper'ı (A), B) temizler)
+    function cleanText(text) { return text.replace(/^[A-E]\)\s*/, ''); }
+
     function renderTest(alan) {
-        // Navigasyon haritasını oluştur
         const map = document.getElementById("navMap");
         map.innerHTML = "";
         
         suankiSorular.forEach((soru, index) => {
-            // Harita Noktası
+            // Harita
             const dot = document.createElement("div");
             dot.className = "nav-dot";
             dot.innerText = index + 1;
@@ -349,12 +502,15 @@
                 <span class="question-number">Soru ${index + 1}</span>
                 <button class="flag-btn" id="flag-${index}" onclick="bayrakKoy(${index})">🚩 Sonra Bak</button>
             </div>
-            <div style="font-size:17px; margin-bottom:15px; font-weight:600;">${soru.soru}</div>
+            <div class="question-text">${soru.soru}</div>
             <div class="options">`;
             
-            soru.secenekler.forEach(secenek => {
-                const val = secenek.replace(/"/g, '&quot;');
-                html += `<label><input type="radio" name="soru${index}" value="${val}" onchange="cevapVerildi(${index})"> ${secenek}</label>`;
+            // Karıştırılmış Şıkları Yazdır (A, B, C... dinamik eklenir)
+            const labels = ["A", "B", "C", "D", "E"];
+            soru.shuffledOptions.forEach((optText, i) => {
+                // Şık metninden eski A) B) temizlenir, sadece içerik kalır
+                const cleanOpt = cleanText(optText);
+                html += `<label><input type="radio" name="soru${index}" value="${cleanOpt}" onchange="cevapVerildi(${index}, '${cleanOpt}')"> <b>${labels[i]})</b> ${cleanOpt}</label>`;
             });
             html += `</div>`;
             kart.innerHTML = html;
@@ -368,53 +524,77 @@
             const div = document.createElement("div");
             div.className = "question-card";
             div.innerHTML = `
-                <div style="font-weight:bold; margin-bottom:10px;">${item.soru}</div>
-                <textarea id="klasikCevap${index}" style="width:100%;" placeholder="Cevabınızı buraya yazınız..."></textarea>
+                <div class="question-text">Soru ${index+1}: ${item.soru}</div>
+                <textarea id="klasikCevap${index}" oninput="cevapVerildi(${index}, this.value)" style="width:100%;" placeholder="Cevabınızı buraya yazınız..."></textarea>
             `;
             alan.appendChild(div);
         });
     }
 
-    // --- 6. ETKİLEŞİM (HARİTA & BAYRAK) ---
-    function cevapVerildi(index) {
-        document.getElementById(`dot-${index}`).classList.add("answered");
+    // --- 8. ETKİLEŞİM & AUTO-SAVE ---
+    function cevapVerildi(index, value) {
+        autoSaveData.cevaplar[index] = value;
+        if(aktifTest !== 'klasik') {
+            document.getElementById(`dot-${index}`).classList.add("answered");
+            updateProgress();
+        }
+        saveToLocal();
     }
 
     function bayrakKoy(index) {
         const btn = document.getElementById(`flag-${index}`);
         const dot = document.getElementById(`dot-${index}`);
-        
         if (flagged[index]) {
-            delete flagged[index];
-            btn.classList.remove("active");
-            dot.classList.remove("flagged");
-            btn.innerText = "🚩 Sonra Bak";
+            delete flagged[index]; delete autoSaveData.flagged[index];
+            btn.classList.remove("active"); dot.classList.remove("flagged"); btn.innerText = "🚩 Sonra Bak";
         } else {
-            flagged[index] = true;
-            btn.classList.add("active");
-            dot.classList.add("flagged");
-            btn.innerText = "🚩 İşaretlendi";
+            flagged[index] = true; autoSaveData.flagged[index] = true;
+            btn.classList.add("active"); dot.classList.add("flagged"); btn.innerText = "🚩 İşaretlendi";
         }
+        saveToLocal();
     }
 
-    // --- 7. SAYAÇ & UTILS ---
+    function updateProgress() {
+        if(aktifTest === 'klasik') return;
+        const total = suankiSorular.length;
+        const answered = Object.keys(autoSaveData.cevaplar).length;
+        const pct = (answered / total) * 100;
+        document.getElementById("progress-bar").style.width = pct + "%";
+    }
+
+    function saveToLocal() {
+        autoSaveData.ihlal = ihlalSayisi;
+        // Kalan süreyi hesaplamak için başlangıç zamanını güncellemiyoruz, sadece session'ı saklıyoruz
+        localStorage.setItem('sinavSession', JSON.stringify(autoSaveData));
+    }
+
+    function restoreSession(data) {
+        // Oturum kurtarma: Öğrenciyi menüye atıyoruz (basit kurtarma)
+        document.getElementById("girisEkrani").classList.add("hidden");
+        document.getElementById("menuEkrani").classList.remove("hidden");
+        ogrenci = data.ogrenci;
+        document.getElementById("kullaniciAdiSpan").innerText = ogrenci.ad;
+        watermarkOlustur(ogrenci.ad + " " + ogrenci.no);
+    }
+
+    // --- 9. UTILS ---
+    function ihlalTakip() {
+        if (!document.hidden) return;
+        ihlalSayisi++;
+        document.title = `⚠️ UYARI (${ihlalSayisi}) - Sekme Değiştirildi!`;
+        saveToLocal();
+    }
+
     function sayacBaslat(saniye) {
         clearInterval(timerInterval);
         baslangicZamani = new Date();
-        
         let kalan = saniye;
         const display = document.getElementById("sayac");
-        
         timerInterval = setInterval(() => {
             let dk = Math.floor(kalan / 60);
             let sn = kalan % 60;
             display.innerText = `${dk}:${sn < 10 ? '0' : ''}${sn}`;
-            
-            if (--kalan < 0) {
-                clearInterval(timerInterval);
-                alert("Süre doldu! Sınavınız otomatik olarak gönderiliyor.");
-                testiBitir(true);
-            }
+            if (--kalan < 0) { clearInterval(timerInterval); alert("Süre doldu!"); testiBitir(true); }
         }, 1000);
     }
 
@@ -426,11 +606,44 @@
         return array;
     }
 
-    // --- 8. TEST BİTİRME & RAPORLAMA ---
+    function watermarkOlustur(text) {
+        const container = document.getElementById("watermark");
+        container.innerHTML = "";
+        for (let i = 0; i < 15; i++) {
+            const div = document.createElement("div");
+            div.className = "watermark-text";
+            div.innerText = text;
+            container.appendChild(div);
+        }
+    }
+
+    // --- 10. BITIRME & AKILLI ÖZET ---
+    function ozetGoster() {
+        const toplam = (aktifTest === 'klasik') ? klasikSorular.length : suankiSorular.length;
+        const cevaplanan = Object.keys(autoSaveData.cevaplar).length;
+        const bos = toplam - cevaplanan;
+        const isaretli = Object.keys(flagged).length;
+
+        let html = `
+            <div class="modal-stat">✅ Cevaplanan: <b>${cevaplanan}</b></div>
+            <div class="modal-stat" style="color:${bos>0?'red':'green'}">⚠️ Boş Bırakılan: <b>${bos}</b></div>
+            <div class="modal-stat" style="color:#f39c12">🚩 İşaretlenen: <b>${isaretli}</b></div>
+            <p>Sınavı bitirmek istediğinize emin misiniz?</p>
+        `;
+        document.getElementById("modalIcerik").innerHTML = html;
+        document.getElementById("ozetModal").style.display = "block";
+    }
+
+    function modalKapat() {
+        document.getElementById("ozetModal").style.display = "none";
+    }
+
     function testiBitir(otomatik = false) {
-        if (!otomatik && !confirm("Sınavı bitirmek istediğinize emin misiniz?")) return;
-        
+        modalKapat();
         clearInterval(timerInterval);
+        document.removeEventListener("visibilitychange", ihlalTakip);
+        localStorage.removeItem('sinavSession'); // Sınav bitti, kaydı sil
+
         const bitisZamani = new Date();
         const gecenSureSn = Math.floor((bitisZamani - baslangicZamani) / 1000);
         const gecenSureStr = `${Math.floor(gecenSureSn / 60)} dk ${gecenSureSn % 60} sn`;
@@ -441,48 +654,34 @@
 
         if (aktifTest === 'klasik') {
             raporMetni = "[KLASİK] ";
-            // Klasik Sınav için Detaylı Görüntüleme Başlığı
-            detayHtml = "<h3 style='color:#2c3e50; border-bottom:2px solid #ddd; padding-bottom:10px; margin-top:20px;'>Cevap Anahtarı Karşılaştırması</h3>";
-            
+            detayHtml = "<h3 style='color:#2c3e50; border-bottom:2px solid #ddd; padding-bottom:10px;'>Cevap Anahtarı</h3>";
             klasikSorular.forEach((item, index) => {
-                const cvp = document.getElementById(`klasikCevap${index}`).value.replace(/\n/g, " ");
-                raporMetni += `S${index+1}: ${cvp} || `;
-                
-                // Klasik Sınav Karşılaştırma Kartı
+                const cvp = autoSaveData.cevaplar[index] || "";
+                raporMetni += `S${index+1}: ${cvp.replace(/\n/g," ")} || `;
                 detayHtml += `
                 <div class="explanation-card" style="border-left: 5px solid #3498db; background: #f8fbff;">
-                    <div style="font-weight:bold; color:#2c3e50; margin-bottom:5px;">Soru ${index+1}: ${item.soru}</div>
-                    <div style="margin-bottom:10px;">
-                        <span style="color:#e67e22; font-weight:bold;">Sizin Cevabınız:</span><br>
-                        ${cvp || "Boş Bırakıldı"}
-                    </div>
-                    <div style="background:#eafaf1; padding:10px; border-radius:5px; border:1px solid #27ae60;">
-                        <span style="color:#27ae60; font-weight:bold;">Beklenen Cevap (Öğretmen Notu):</span><br>
-                        ${item.cevap}
-                    </div>
+                    <div style="font-weight:bold; margin-bottom:5px;">Soru ${index+1}: ${item.soru}</div>
+                    <div style="margin-bottom:10px;"><span style="color:#e67e22; font-weight:bold;">Sizin Cevabınız:</span><br>${cvp || "Boş"}</div>
+                    <div style="background:#eafaf1; padding:10px; border-radius:5px;"><span style="color:#27ae60; font-weight:bold;">Beklenen Cevap:</span><br>${item.cevap}</div>
                 </div>`;
             });
-            
             puan = "DEĞERLENDİRİLECEK";
             document.getElementById("klasikMesaj").style.display = "block";
-            // Klasik sınav sonuçlarını da ekrana basıyoruz
-            document.getElementById("detayliCozumler").innerHTML = detayHtml;
-            
         } else {
-            // Test Puanlama (Eski Sistem Aynen Devam Ediyor)
             let dogruSayisi = 0;
             raporMetni = `[${aktifTest.toUpperCase()}] `;
             
             suankiSorular.forEach((soru, index) => {
-                const secilenEl = document.querySelector(`input[name="soru${index}"]:checked`);
-                const secilen = secilenEl ? secilenEl.value : "BOŞ";
-                const dogruMu = (secilen === soru.cevap);
+                const secilen = autoSaveData.cevaplar[index] || "BOŞ";
+                // Şıklar karıştığı için metin karşılaştırması yapıyoruz (CleanText ile A) B) atılır)
+                const dogruMetin = cleanText(soru.cevap);
+                const isCorrect = (secilen === dogruMetin);
                 
-                if (dogruMu) {
+                if (isCorrect) {
                     dogruSayisi++;
-                    detayHtml += `<div class="explanation-card correct"><b>Soru ${index+1}: DOĞRU</b><br>Sizin Cevabınız: ${secilen}<br><i>${soru.aciklama}</i></div>`;
+                    detayHtml += `<div class="explanation-card correct"><b>Soru ${index+1}: DOĞRU</b><br>Sizin Cevabınız: ${secilen}<br><i>${soru.aciklama || ""}</i></div>`;
                 } else {
-                    detayHtml += `<div class="explanation-card wrong"><b>Soru ${index+1}: YANLIŞ</b><br>Sizin Cevabınız: ${secilen}<br>Doğru Cevap: ${soru.cevap}<br><i>${soru.aciklama}</i></div>`;
+                    detayHtml += `<div class="explanation-card wrong"><b>Soru ${index+1}: YANLIŞ</b><br>Sizin Cevabınız: ${secilen}<br>Doğru Cevap: ${dogruMetin}<br><i>${soru.aciklama || ""}</i></div>`;
                     raporMetni += `S${index+1}:Y (${secilen}) | `;
                 }
             });
@@ -490,23 +689,29 @@
             puan = Math.round((dogruSayisi / suankiSorular.length) * 100);
             raporMetni += ` Doğru: ${dogruSayisi}/${suankiSorular.length}`;
             
+            // Motivasyon Mesajı
+            const msgBox = document.getElementById("ozelMotivasyonKutusu");
+            if(puan < 50) { msgBox.innerText = "Daha fazla çalışmalısın. 🛑"; msgBox.style.color = "#e74c3c"; }
+            else if(puan < 85) { msgBox.innerText = "İyi gidiyorsun! 👍"; msgBox.style.color = "#f39c12"; }
+            else { msgBox.innerText = "Tebrikler! Harika. 🌟"; msgBox.style.color = "#27ae60"; }
+            
             document.getElementById("puanKutusu").style.display = "block";
             document.getElementById("puanGostergesi").innerText = puan;
-            document.getElementById("detayliCozumler").innerHTML = detayHtml;
         }
 
         document.getElementById("testEkrani").classList.add("hidden");
         document.getElementById("sonucEkrani").classList.remove("hidden");
-        document.getElementById("bitirmeSuresi").innerText = gecenSureStr;
+        document.getElementById("bitirmeSuresi").innerText = "Süre: " + gecenSureStr;
+        document.getElementById("detayliCozumler").innerHTML = detayHtml;
 
-        // --- YENİ EKLENEN: Akıllı Mesaj ve İhlal Raporu ---
-        mesajKutusunuGoster(puan);
         if(ihlalSayisi > 0) {
-            raporMetni += ` [⚠️ SEKME İHLALİ: ${ihlalSayisi} KEZ]`;
+            document.getElementById("ihlalSayisi").innerText = `⚠️ ${ihlalSayisi} kez sekme değiştirdiniz!`;
+            raporMetni += ` [İHLAL: ${ihlalSayisi}]`;
+        } else {
+            document.getElementById("ihlalSayisi").innerText = "✅ Sınav odağı korundu.";
+            document.getElementById("ihlalSayisi").style.color = "green";
         }
-        // --------------------------------------------------
 
-        // Veriyi Gönder (Süre Bilgisiyle)
         const data = {
             isim: ogrenci.ad,
             sinif: ogrenci.sinif,
@@ -522,7 +727,6 @@
         }).catch(e => console.log(e));
     }
 
-    // --- 9. MATERYAL PANELİ ---
     function renderMateryaller() {
         const panel = document.getElementById("materyalPaneli");
         let html = "";
@@ -530,56 +734,13 @@
             html += `<a href="${mat.link}" target="_blank" class="file-link">${mat.baslik}</a>`;
         });
         panel.innerHTML = html;
-
-        // Akordiyon Olayı
         const accBtn = document.querySelector(".accordion-btn");
-        accBtn.onclick = function() {
-            this.classList.toggle("active");
-            if (panel.style.maxHeight) {
-                panel.style.maxHeight = null;
-            } else {
-                panel.style.maxHeight = panel.scrollHeight + "px";
-            }
-        };
-    }
-
-    // --- YENİ EKLENEN: Helper Fonksiyonlar ---
-    document.addEventListener("visibilitychange", function() {
-        const testEkrani = document.getElementById("testEkrani");
-        // Sadece test ekranı görünürken (hidden sınıfı yoksa) say
-        if (testEkrani && !testEkrani.classList.contains("hidden") && document.hidden) {
-            ihlalSayisi++;
-            document.title = `⚠️ UYARI (${ihlalSayisi}) - Sekme Değiştirildi!`;
-        } else if (!document.hidden) {
-            document.title = "Tarih Dersi Eğitim Portalı";
-        }
-    });
-
-    function getMotivasyonMesaji(puan) {
-        if (puan === "DEĞERLENDİRİLECEK") return "Sonuçlar öğretmeniniz tarafından değerlendirilecektir.";
-        if (puan < 50) return "Daha fazla çalışmalısın. Konu tekrarı yapmanı öneririm. 🛑";
-        if (puan < 85) return "İyi gidiyorsun, biraz daha dikkatle mükemmel olabilir. 👍";
-        return "Tebrikler! Konuyu harika kavramışsın. 🌟";
-    }
-
-    function mesajKutusunuGoster(puan) {
-        let msgBox = document.getElementById("ozelMotivasyonKutusu");
-        if (!msgBox) {
-            msgBox = document.createElement("div");
-            msgBox.id = "ozelMotivasyonKutusu";
-            msgBox.style.cssText = "text-align: center; margin-top: 15px; font-weight: bold; font-size: 18px; padding: 10px; border-radius: 5px;";
-            const puanKutusu = document.getElementById("puanKutusu");
-            if(puanKutusu) puanKutusu.appendChild(msgBox);
-        }
-        
-        msgBox.innerText = getMotivasyonMesaji(puan);
-        
-        if (typeof puan === 'number') {
-            if(puan < 50) msgBox.style.color = "#e74c3c";
-            else if(puan < 85) msgBox.style.color = "#f39c12";
-            else msgBox.style.color = "#27ae60";
-        } else {
-            msgBox.style.color = "#3498db";
+        if(accBtn) {
+            accBtn.onclick = function() {
+                this.classList.toggle("active");
+                if (panel.style.maxHeight) { panel.style.maxHeight = null; } 
+                else { panel.style.maxHeight = panel.scrollHeight + "px"; }
+            };
         }
     }
 </script>
