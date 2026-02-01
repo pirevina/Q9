@@ -61,11 +61,6 @@
         }
         .settings-btn:hover { opacity: 0.8; transform: translateY(-1px); }
         
-        /* Aktif buton stili */
-        .settings-btn.active-mode {
-            background: #d35400; color: white;
-        }
-
         /* --- FİLİGRAN --- */
         #watermark {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -139,7 +134,7 @@
             display: block; padding: 12px; margin-bottom: 8px; cursor: pointer; 
             border-radius: 6px; border: 1px solid var(--card-border); 
             transition: background 0.2s; 
-            font-size: var(--font-size-base); /* Seçeneklerde de dinamik font */
+            font-size: var(--font-size-base); 
         }
         .options label:hover { background-color: var(--option-hover); border-color: var(--accent-color); }
         .options input { width: auto; margin-right: 10px; }
@@ -181,7 +176,7 @@
     </div>
 
     <div id="girisEkrani">
-        <h1>Tarih Dersi Tekrar Testleri Öğrenci Girişi</h1>
+        <h1>Boğaziçi MTAL Tarih Dersi Tekrar Testleri Öğrenci Girişi</h1>
         <p style="text-align: center; color: #7f8c8d;">Sınava başlamak için bilgilerinizi giriniz.</p>
         
         <div class="form-group">
@@ -200,8 +195,7 @@
                 <option value="9-F">9-F</option>
                 <option value="9-G">9-G</option>
                 <option value="9-H">9-H</option>
-                <option value="10-A">10-A</option>
-                <option value="10-B">10-B</option>
+                <option value="10-A">9-J</option>
             </select>
         </div>
         <div class="form-group">
@@ -222,13 +216,13 @@
             Sevgili öğrenciler; sizin için hazırladığım bu testler ve ders notları derslerde işlediğimiz konularımızı anlamlı öğrenmeye dönüştürmek için hazırlanmıştır. Çoktan seçmeli testleriniz "Basit, Orta, Zor" şeklinde sizlere sunulmuş olup derslerdeki dikkat seviyenizi ve not alma alışkanlığınızı ölçerken "Açık Uçlu (Klasik)" sınavınız ise MEB Maarif Modelinin sizlerden istediği <strong>"YORUMLAMA ve ANALİZ BECERİSİ"</strong>ni ölçmek üzere hazırlanmıştır.
         </div>
 
-        <p style="text-align: center; font-weight: bold;">Lütfen bir işlem seçiniz:</p>
+        <p style="text-align: center; font-weight: bold;">Çözmek istediğiniz testi seçiniz:</p>
         
         <div class="menu-grid">
-            <button class="menu-btn" onclick="testSec('test1')">📝 1. Ünite Testi<br><small>(30 Soru - 30 Dk)</small></button>
-            <button class="menu-btn" onclick="testSec('test2')">📝 2. Ünite Testi<br><small>(30 Soru - 30 Dk)</small></button>
-            <button class="menu-btn" onclick="testSec('test3')">📝 3. Ünite Testi<br><small>(30 Soru - 30 Dk)</small></button>
-            <button class="menu-btn klasik" onclick="testSec('klasik')">✍️ Klasik Sınav<br><small>(Metne Dayalı - 40 Dk)</small></button>
+            <button class="menu-btn" onclick="testSec('test1')">📝 1. Ünite 1. Test<br><small>(30 Soru - 30 Dk)</small></button>
+            <button class="menu-btn" onclick="testSec('test2')">📝 1. Ünite 2. Test<br><small>(30 Soru - 30 Dk)</small></button>
+            <button class="menu-btn" onclick="testSec('test3')">📝 1. Ünite 3. Test<br><small>(30 Soru - 30 Dk)</small></button>
+            <button class="menu-btn klasik" onclick="testSec('klasik')">✍️ 1. Ünite Klasik Sınav<br><small>(Metne Dayalı - 40 Dk)</small></button>
         </div>
 
         <button class="accordion-btn">📚 Ders Materyalleri ve İndirmeler</button>
@@ -268,7 +262,8 @@
         </div>
 
         <div id="detayliCozumler"></div>
-        <button class="action-btn back-btn" onclick="localStorage.clear(); location.reload()">Çıkış Yap</button>
+        
+        <button class="action-btn back-btn" onclick="anasayfayaDon()">Anasayfaya Dön</button>
     </div>
 
     <div id="ozetModal" class="modal">
@@ -302,7 +297,7 @@
     const klasikSorular = [
         { soru: "\"Ünlü tarihçi Herodot, tarihçiliğin babası olarak bilinir. O, 'Historia' adlı eserinde gezdiği yerleri, gördüğü halkları ve duyduğu efsaneleri anlatmıştır. Ancak Herodot olayları anlatırken neden ve sonuç ilişkisi kurmaktan ziyade, olayları hikayeleyici bir dille, kulaktan dolma bilgilere ve mitolojiye de yer vererek aktarmıştır.\"<br>Yukarıdaki metne göre, Herodot'un tarih yazıcılığı anlayışını 'Bilimsel Tarihçilik'ten ayıran en temel eksiklik nedir? Açıklayınız.", cevap: "Herodot'un anlatımında 'neden-sonuç ilişkisinin' kurulmaması ve bilgilerin 'belgelere' değil, efsane ve duyumlara dayanması onu bilimsel tarihçilikten ayırır. Bilimsel tarih; belge, kanıt ve neden-sonuç ilişkisine dayanır, hikayecilikten uzaktır." },
         { soru: "\"Mısırlılar Nil Nehri'nin taşma zamanını hesaplamak için Güneş yılı esaslı takvimi, Sümerler ise dini ibadetlerini düzenlemek için Ay yılı esaslı takvimi icat etmişlerdir.\"<br>Bu bilgilere bakarak, insanoğlunun 'takvim' ve 'zaman ölçme' ihtiyacının ortaya çıkmasında hangi faktörlerin etkili olduğunu yazınız.", cevap: "İnsanların takvimi icat etmesinde; tarımsal faaliyetleri düzenleme (Nil'in taşması, hasat zamanı) ve dini ibadetlerin zamanını belirleme (Sümerler) gibi 'ekonomik, coğrafi ve dini' ihtiyaçlar etkili olmuştur." },
-        { soru: "\"Bir arkeolojik kazı sırasında toprak altından şu buluntular çıkarılmıştır: Kırık bir çömlek parçası, üzerinde resimler olan bir madeni para, yanmış buğday taneleri ve kilden yapılmış bir tablet.\"<br>Bu buluntuları 'Yazılı Kaynaklar' ve 'Yazısız (Kalıntı) Kaynaklar' olarak sınıflandırınız.", cevap: "Yazılı Kaynaklar: Madeni para (üzerindeki yazılar varsa), Kil tablet. Yazısız (Kalıntı): Kırık çömlek parçası, Yanmış buğday taneleri." },
+        { soru: "\"Bir arkeolojik kazı sırasında toprak altından şu buluntular çıkarılmıştır: Kırık bir çömlek parçası, üzerinde resimler olan bir madeni para, yanmış buğday taneleri ve kilden yapılmış bir tablet.\"<br>Bu buluntuları 'Yazılı Kaynaklar' ve 'Yazısız (Kalıntı) Kaynaklar' olarak sınıflandırınız.", cevap: "Yazılı Kaynaklar: Madeni para (üzerindeki yazılar varsa), Kil tablet. Yazısız (Kalıntı) Kaynaklar: Kırık çömlek parçası, Yanmış buğday taneleri." },
         { soru: "\"Tarih öğretmeni derste şu örneği vermiştir: 'Malazgirt Savaşı (1071) somut, başlangıcı ve bitişi belli bir gelişmedir. Ancak Anadolu'nun Türkleşmesi, bu savaşla başlayıp yüzyıllar süren genel bir süreçtir.'\" Metindeki örnekten yola çıkarak 'Tarihi Olay' ve 'Tarihi Olgu' kavramları arasındaki farkı bir cümle ile açıklayınız.", cevap: "Tarihi Olay; kısa süreli, anlık ve somut gelişmelerdir (Savaş). Tarihi Olgu ise; olayların sonucunda ortaya çıkan, uzun sürece yayılan ve süreklilik gösteren soyut değişimlerdir (Türkleşme)." },
         { soru: "\"Orta Çağ Avrupa'sında veba salgını sırasında doktorlar, hastalığın 'kötü kokulardan' yayıldığını düşünerek gagalı maskeler takmış ve hastaları kan akıtarak tedavi etmeye çalışmışlardır. Bugün biz bunun tıbben yanlış olduğunu biliyoruz.\"<br>Bir tarihçi bu durumu incelerken 'O dönemin doktorları çok cahilmiş.' demek yerine nasıl bir yaklaşım sergilemelidir? 'Tarihsel Empati' kavramını kullanarak açıklayınız.", cevap: "Tarihçi, geçmişi bugünün bilimsel bilgisiyle yargılamamalıdır (Anakronizm). Bunun yerine 'Tarihsel Empati' yaparak, o dönemin şartlarını, bilgi birikimini ve imkanlarını göz önüne almalı; doktorların o günkü mevcut bilgiyle ellerinden geleni yaptığını anlamaya çalışmalıdır." },
         { soru: "\"Kadeş Savaşı sonrasında Hitit kaynakları savaşı Hititlerin kazandığını, Mısır tapınak duvarları ise Mısırlıların kazandığını yazmaktadır.\"<br>Bu durum, tarih araştırmalarında 'tek bir kaynağa güvenmenin' sakıncalarını nasıl gösterir? Tarihçi gerçeğe ulaşmak için ne yapmalıdır?", cevap: "Bu durum, kaynakların taraflı (subjektif) olabileceğini gösterir. Sadece tek tarafa bakmak tarihçiyi yanıltır. Tarihçi gerçeğe ulaşmak için 'Kaynak Karşılaştırması' (Terkip/Sentez öncesi Tenkit) yapmalı, farklı kaynakları kıyaslayarak ortak doğruları bulmalıdır." },
@@ -725,6 +720,20 @@
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
         }).catch(e => console.log(e));
+    }
+
+    // --- YENİ EKLENEN: SONUÇTAN MENÜYE DÖNÜŞ ---
+    function anasayfayaDon() {
+        // Ekranları değiştir
+        document.getElementById("sonucEkrani").classList.add("hidden");
+        document.getElementById("menuEkrani").classList.remove("hidden");
+        
+        // Değişkenleri sıfırla (Yeni test için hazırlık)
+        aktifTest = null;
+        ihlalSayisi = 0;
+        
+        // Sayfayı en başa kaydır
+        window.scrollTo(0,0);
     }
 
     function renderMateryaller() {
