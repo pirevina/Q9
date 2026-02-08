@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boğaziçi Koleji - Tarih Portalı</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 90%;
+        }
+
+        .logo-area {
+            margin-bottom: 20px;
+        }
+        
+        .logo-area img {
+            max-height: 100px; /* Logo boyutunu buradan ayarlayabilirsin */
+            width: auto;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 10px 0 5px 0;
+            font-size: 28px;
+        }
+
+        p.subtitle {
+            color: #7f8c8d;
+            font-size: 18px;
+            margin-bottom: 40px;
+            font-weight: 500;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        /* KART TASARIMLARI */
+        .card {
+            display: block;
+            text-decoration: none;
+            color: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .card span {
+            font-size: 14px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* SINIF RENKLERİ */
+        .sinif-9 {
+            background: linear-gradient(135deg, #3498db, #2980b9); /* Mavi */
+        }
+
+        .sinif-10 {
+            background: linear-gradient(135deg, #e67e22, #d35400); /* Turuncu */
+        }
+
+        .sinif-11 {
+            background: linear-gradient(135deg, #27ae60, #219150); /* Yeşil */
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 12px;
+            color: #bdc3c7;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="logo-area">
+            <img src="logo.png" alt="Boğaziçi Koleji Logo" onerror="this.style.display='none'">
+        </div>
+
+        <h1>Boğaziçi Koleji</h1>
+        <p class="subtitle">Tarih Dersi Eğitim Portalı</p>
+
+        <div class="grid">
+            
+            <a href="https://pirevina.github.io/Q9/" class="card sinif-9">
+                <span>Giriş Yap</span><br>
+                <h2>9. Sınıf</h2>
+            </a>
+
+            <a href="sinif10.html" class="card sinif-10">
+                <span>Giriş Yap</span><br>
+                <h2>10. Sınıf</h2>
+            </a>
+
+            <a href="sinif11.html" class="card sinif-11">
+                <span>Giriş Yap</span><br>
+                <h2>11. Sınıf</h2>
+            </a>
+
+        </div>
+
+        <div class="footer">
+            Hazırlayan: Murat Mutlu, Tarih Öğretmeni © 2026
+        </div>
+
+    </div>
+
+</body>
+</html>
